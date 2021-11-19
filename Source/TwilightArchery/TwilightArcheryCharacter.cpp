@@ -16,7 +16,7 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-
+	
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
@@ -54,6 +54,9 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Toggle Splitscreen", IE_Pressed, this, &ATwilightArcheryCharacter::OnToggleSplitscreen);
+
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
@@ -67,35 +70,19 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 	PlayerInputComponent->BindAxis("TurnRate", this, &ATwilightArcheryCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATwilightArcheryCharacter::LookUpAtRate);
-
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATwilightArcheryCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &ATwilightArcheryCharacter::TouchStopped);
-
-	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ATwilightArcheryCharacter::OnResetVR);
 }
 
-
-void ATwilightArcheryCharacter::OnResetVR()
+void ATwilightArcheryCharacter::OnToggleSplitscreen()
 {
-	// If TwilightArchery is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in TwilightArchery.Build.cs is not automatically propagated
-	// and a linker error will result.
-	// You will need to either:
-	//		Add "HeadMountedDisplay" to [YourProject].Build.cs PublicDependencyModuleNames in order to build successfully (appropriate if supporting VR).
-	// or:
-	//		Comment or delete the call to ResetOrientationAndPosition below (appropriate if not supporting VR)
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-}
+	auto gameViewport = GetWorld()->GetGameViewport();
 
-void ATwilightArcheryCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-		Jump();
-}
+	gameViewport->MaxSplitscreenPlayers = 2;
+	gameViewport->UpdateActiveSplitscreenType();
 
-void ATwilightArcheryCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-		StopJumping();
+	if (gameViewport->IsSplitscreenForceDisabled())
+	{
+		GEngine->AddOnScreenDebugMessage(1, 2, FColor::Red, "Sscreen disabled");
+	}
 }
 
 void ATwilightArcheryCharacter::TurnAtRate(float Rate)
