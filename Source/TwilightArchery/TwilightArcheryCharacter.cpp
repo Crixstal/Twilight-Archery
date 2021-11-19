@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATwilightArcheryCharacter
@@ -75,6 +76,8 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 void ATwilightArcheryCharacter::OnToggleSplitscreen()
 {
 	auto gameViewport = GetWorld()->GetGameViewport();
+
+	gameViewport->SetForceDisableSplitscreen(!gameViewport->IsSplitscreenForceDisabled());
 
 	gameViewport->MaxSplitscreenPlayers = 2;
 	gameViewport->UpdateActiveSplitscreenType();
