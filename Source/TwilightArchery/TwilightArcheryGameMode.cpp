@@ -17,5 +17,5 @@ ATwilightArcheryGameMode::ATwilightArcheryGameMode()
 
 void ATwilightArcheryGameMode::BeginPlay()
 {
-	UGameplayStatics::CreatePlayer(GetWorld());
+	//UGameplayStatics::CreatePlayer(GetWorld());
 }

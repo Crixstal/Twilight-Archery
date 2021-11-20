@@ -29,6 +29,7 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
@@ -60,6 +61,9 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed,  this, &ATwilightArcheryCharacter::StartSprinting);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATwilightArcheryCharacter::StopSprinting);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATwilightArcheryCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATwilightArcheryCharacter::MoveRight);
 
@@ -74,7 +78,7 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 void ATwilightArcheryCharacter::OnToggleSplitscreen()
 {
-	auto gameViewport = GetWorld()->GetGameViewport();
+	/*auto gameViewport = GetWorld()->GetGameViewport();
 
 	gameViewport->MaxSplitscreenPlayers = 2;
 	gameViewport->UpdateActiveSplitscreenType();
@@ -82,7 +86,7 @@ void ATwilightArcheryCharacter::OnToggleSplitscreen()
 	if (gameViewport->IsSplitscreenForceDisabled())
 	{
 		GEngine->AddOnScreenDebugMessage(1, 2, FColor::Red, "Sscreen disabled");
-	}
+	}*/
 }
 
 void ATwilightArcheryCharacter::TurnAtRate(float Rate)
@@ -124,4 +128,18 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ATwilightArcheryCharacter::StartSprinting()
+{
+	bIsSprinting = true;
+
+	GetCharacterMovement()->MaxWalkSpeed = sprintWalkSpeed;
+}
+
+void ATwilightArcheryCharacter::StopSprinting()
+{
+	bIsSprinting = false;
+
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 }

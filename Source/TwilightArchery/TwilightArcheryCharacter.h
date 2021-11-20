@@ -29,6 +29,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	bool bIsSprinting = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
+		float baseWalkSpeed = 400.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
+		float sprintWalkSpeed = 550.f;
+
 protected:
 	UFUNCTION()
 	void OnToggleSplitscreen();
@@ -38,6 +46,9 @@ protected:
 
 	/** Called for side to side input */
 	void MoveRight(float Value);
+
+	void StartSprinting();
+	void StopSprinting();
 
 	/** 
 	 * Called via input to turn at a given rate. 
