@@ -32,12 +32,26 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	bool bIsSprinting = false;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	bool bIsAiming = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
 		float baseWalkSpeed = 400.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
 		float sprintWalkSpeed = 550.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
+		float aimWalkSpeed = 300.f;
+
+	UFUNCTION(BlueprintCallable)
+	void OnAimingEnd();
+	UFUNCTION(BlueprintCallable)
+	void OnShootReady();
+
 
 protected:
+	bool bHasShoot = false;
+	bool bReadyToShoot = false;
+
 	UFUNCTION()
 	void OnToggleSplitscreen();
 
@@ -50,6 +64,11 @@ protected:
 	void StartSprinting();
 	void StopSprinting();
 
+	void StartAiming();
+	void StopAiming();
+
+	void OnJump();
+	void OnStopJumping();
 	/** 
 	 * Called via input to turn at a given rate. 
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
@@ -67,7 +86,12 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	virtual void BeginPlay() override;
+
 public:
+
+	virtual void Tick(float DeltaTime) override;
+
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/

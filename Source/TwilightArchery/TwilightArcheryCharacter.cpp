@@ -48,6 +48,24 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
+void ATwilightArcheryCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ATwilightArcheryCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	/*if (bIsAiming)
+	{
+		FRotator camforwardRot = FollowCamera->GetForwardVector().Rotation();
+		camforwardRot.Pitch = 0.f;
+
+		SetActorRotation(camforwardRot);
+	}*/
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -58,11 +76,14 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 	PlayerInputComponent->BindAction("Toggle Splitscreen", IE_Pressed, this, &ATwilightArcheryCharacter::OnToggleSplitscreen);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ATwilightArcheryCharacter::OnJump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ATwilightArcheryCharacter::OnStopJumping);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed,  this, &ATwilightArcheryCharacter::StartSprinting);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATwilightArcheryCharacter::StopSprinting);
+
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ATwilightArcheryCharacter::StartAiming);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ATwilightArcheryCharacter::StopAiming);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATwilightArcheryCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATwilightArcheryCharacter::MoveRight);
@@ -142,4 +163,56 @@ void ATwilightArcheryCharacter::StopSprinting()
 	bIsSprinting = false;
 
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+}
+
+void ATwilightArcheryCharacter::StartAiming()
+{
+	bIsAiming = true;
+
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->MaxWalkSpeed = aimWalkSpeed;
+
+	bUseControllerRotationRoll = true;
+	bUseControllerRotationYaw = true;
+}
+
+void ATwilightArcheryCharacter::StopAiming()
+{
+	bIsAiming = false;
+
+	if (bReadyToShoot)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Shooting");
+}
+
+void ATwilightArcheryCharacter::OnAimingEnd()
+{
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
+
+	bReadyToShoot = false;
+
+	StopAiming();
+
+}
+
+void ATwilightArcheryCharacter::OnShootReady()
+{
+	bReadyToShoot = true;
+}
+
+void ATwilightArcheryCharacter::OnJump()
+{
+	if (bIsAiming) return;
+
+	Jump();
+}
+
+void ATwilightArcheryCharacter::OnStopJumping()
+{
+	if (bIsAiming) return;
+
+	StopJumping();
 }
