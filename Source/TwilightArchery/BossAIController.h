@@ -6,12 +6,26 @@
 #include "AIController.h"
 #include "BossAIController.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class TWILIGHTARCHERY_API ABossAIController : public AAIController
 {
 	GENERATED_BODY()
 	
+public:
+	ABossAIController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+private:
+
+	//COMPONENTS || BEHAVIORS
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "BehaviorTree", meta = (AllowPrivateAccess = "true"))
+		class UBehaviorTreeComponent* behaviorComp;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "BehaviorTree", meta = (AllowPrivateAccess = "true"))
+		class UBehaviorTree* behavior;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 };

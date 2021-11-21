@@ -25,10 +25,3 @@ void ABossCharacter::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void ABossCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
