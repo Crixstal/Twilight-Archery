@@ -33,10 +33,12 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
+	BowMesh = CreateOptionalDefaultSubobject<USkeletalMeshComponent>(TEXT("BowMesh"));
+	BowMesh->SetupAttachment(GetMesh(), FName("BowSocket"));
+
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
@@ -51,19 +53,44 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 void ATwilightArcheryCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CameraBoom->TargetArmLength = baseArmLength;
+	CameraBoom->SocketOffset = baseArmOffset;
+
+	targetArmLength = baseArmLength;
+
+	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
+	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
 }
 
 void ATwilightArcheryCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/*if (bIsAiming)
-	{
-		FRotator camforwardRot = FollowCamera->GetForwardVector().Rotation();
-		camforwardRot.Pitch = 0.f;
+	UpdateCameraBoom();
+}
 
-		SetActorRotation(camforwardRot);
-	}*/
+void ATwilightArcheryCharacter::UpdateCameraBoom()
+{
+	if (timerArmCamera > 0.f)
+	{
+		float t = timerArmCamera / delayArmBaseToAim;
+		t = bIsAiming ? 1.f - t : t;
+
+		float curveValue = armCurve->GetFloatValue(t);
+
+		float newLengthTarget = FMath::Lerp(baseArmLength, aimArmLength, curveValue);
+		float newOffsetTargetY = FMath::Lerp(baseArmOffset.Y, aimArmOffset.Y, curveValue);
+
+
+		CameraBoom->TargetArmLength = FMath::Clamp(newLengthTarget, aimArmLength, baseArmLength);
+		//CameraBoom->TargetOffset newOffsetTarget;//FMath::Clamp(newOffsetTarget, aimArmOffset, baseArmOffset);
+		CameraBoom->SocketOffset.Y = FMath::Clamp(newOffsetTargetY, baseArmOffset.Y, aimArmOffset.Y);
+
+		UE_LOG(LogTemp, Warning, TEXT("Offset = %f"), CameraBoom->SocketOffset.Y);
+
+		timerArmCamera -= GetWorld()->GetDeltaSeconds();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -174,14 +201,22 @@ void ATwilightArcheryCharacter::StartAiming()
 
 	bUseControllerRotationRoll = true;
 	bUseControllerRotationYaw = true;
+
+	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
+	targetArmLength = aimArmLength;
 }
 
 void ATwilightArcheryCharacter::StopAiming()
 {
-	bIsAiming = false;
-
 	if (bReadyToShoot)
+	{
+		bHasShoot = true;
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Shooting");
+
+		return;
+	}
+
+	OnAimingEnd();
 }
 
 void ATwilightArcheryCharacter::OnAimingEnd()
@@ -193,9 +228,15 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 	bUseControllerRotationYaw = false;
 
 	bReadyToShoot = false;
+	bHasShoot = false;
+	bIsAiming = false;
 
-	StopAiming();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "StopAiming");
 
+	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
+	targetArmLength = baseArmLength;
+
+	bIsAiming = false;
 }
 
 void ATwilightArcheryCharacter::OnShootReady()
