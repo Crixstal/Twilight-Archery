@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/BoxComponent.h"
+#include "TwilightArcheryCharacter.h"
 #include "BossCharacter.generated.h"
 
 UCLASS()
@@ -22,4 +24,23 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components HeadBox")
+		class UBoxComponent* hitBoxHead;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components BodyBox")
+		class UBoxComponent* hitBoxBody;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components LegBox")
+		class UBoxComponent* hitBoxLegs;
+
+	/*UPROPERTY(VisibleAnywhere, Category = "lifeEnemy")
+		int life = 200;*/
+
+	AActor* target;
+	bool haveATarget = false;
+
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 };

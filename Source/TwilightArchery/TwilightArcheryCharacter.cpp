@@ -42,6 +42,7 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -71,7 +72,14 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ATwilightArcheryCharacter::OnResetVR);
+
 }
+
+void ATwilightArcheryCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 
 
 void ATwilightArcheryCharacter::OnResetVR()
@@ -134,4 +142,9 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ATwilightArcheryCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
 }

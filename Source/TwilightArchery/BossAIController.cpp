@@ -5,7 +5,7 @@
 
 ABossAIController::ABossAIController(const FObjectInitializer& ObjectInitializer) : AAIController(ObjectInitializer)
 {
-	/*static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT(""));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("/Game/Enemy/AI/BossBT.BossBT"));
 	if (obj.Succeeded())
 	{
 		behaviorTree = obj.Object;
@@ -14,15 +14,13 @@ ABossAIController::ABossAIController(const FObjectInitializer& ObjectInitializer
 	behaviorComp = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviorComp"));
 	blackboard = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboradComp"));
 
-	SetActorTickEnabled(true);*/
+	SetActorTickEnabled(true);
 }
 
 void ABossAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	/*RunBehaviorTree(behaviorTree);
-	behaviorComp.StartTree(*behaviorTree, EBTExecutionMode::Looped);
-
-	player = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());*/
+	RunBehaviorTree(behaviorTree);
+	behaviorComp->StartTree(*behaviorTree, EBTExecutionMode::Looped);
 }
 
