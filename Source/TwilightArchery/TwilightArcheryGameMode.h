@@ -14,6 +14,10 @@ class ATwilightArcheryGameMode : public AGameModeBase
 public:
 	ATwilightArcheryGameMode();
 	virtual void BeginPlay() override;
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	
+	UPROPERTY(VisibleAnywhere)
+	TArray<AActor*> playerStarts;
 };
 
 
