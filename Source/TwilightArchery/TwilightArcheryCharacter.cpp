@@ -7,6 +7,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "DrawDebugHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,6 +69,16 @@ void ATwilightArcheryCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateCameraBoom();
+
+	if (bIsAiming)
+	{
+		FHitResult hitResult;
+		FVector end = FollowCamera->GetComponentLocation() + (FollowCamera->GetComponentRotation().Vector() * 100000.f);
+		bool traced = GetWorld()->LineTraceSingleByChannel(hitResult, FollowCamera->GetComponentLocation(), end, ECollisionChannel::ECC_Visibility);
+
+		if (traced)
+			DrawDebugSphere(GetWorld(), hitResult.Location, 15.f, 16, FColor::Red);
+	}
 }
 
 void ATwilightArcheryCharacter::UpdateCameraBoom()
@@ -180,6 +191,8 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 
 void ATwilightArcheryCharacter::StartSprinting()
 {
+	if (bIsAiming) return;
+
 	bIsSprinting = true;
 
 	GetCharacterMovement()->MaxWalkSpeed = sprintWalkSpeed;
@@ -187,6 +200,8 @@ void ATwilightArcheryCharacter::StartSprinting()
 
 void ATwilightArcheryCharacter::StopSprinting()
 {
+	if (bIsAiming) return;
+
 	bIsSprinting = false;
 
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
@@ -194,6 +209,9 @@ void ATwilightArcheryCharacter::StopSprinting()
 
 void ATwilightArcheryCharacter::StartAiming()
 {
+	if (bIsSprinting)
+		StopSprinting();
+
 	bIsAiming = true;
 
 	GetCharacterMovement()->bOrientRotationToMovement = false;
