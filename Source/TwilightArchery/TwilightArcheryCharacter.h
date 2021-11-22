@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Curves/CurveFloat.h"
 #include "GameFramework/Character.h"
+#include "Components/StaticMeshComponent.h"
 #include "TwilightArcheryCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -25,8 +26,14 @@ public:
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* BowMesh;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* ArrowMesh2;
+
+	UPROPERTY(Category = Character, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class AArrow> arrowBP;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera\|Rates")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|Rates")
 	float BaseTurnRate;
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera\|Rates")

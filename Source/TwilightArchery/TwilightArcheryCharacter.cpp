@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "DrawDebugHelpers.h"
+#include "Arrow.h"
 #include "GameFramework/SpringArmComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -37,6 +38,9 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	BowMesh = CreateOptionalDefaultSubobject<USkeletalMeshComponent>(TEXT("BowMesh"));
 	BowMesh->SetupAttachment(GetMesh(), FName("BowSocket"));
 
+	ArrowMesh2 = CreateOptionalDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowMesh"));
+	ArrowMesh2->SetupAttachment(BowMesh, FName("ArrowSocket"));
+
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -62,6 +66,8 @@ void ATwilightArcheryCharacter::BeginPlay()
 
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
 	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
+
+	ArrowMesh2->SetHiddenInGame(true);
 }
 
 void ATwilightArcheryCharacter::Tick(float DeltaTime)
@@ -231,6 +237,8 @@ void ATwilightArcheryCharacter::StopAiming()
 		bHasShoot = true;
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Shooting");
 
+		ArrowMesh2->SetHiddenInGame(true);
+
 		return;
 	}
 
@@ -260,6 +268,16 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 void ATwilightArcheryCharacter::OnShootReady()
 {
 	bReadyToShoot = true;
+
+	ArrowMesh2->SetHiddenInGame(false);
+
+	/*FTransform transform;
+	FActorSpawnParameters spawnParameters;
+
+	AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP);
+
+	FAttachmentTransformRules attachmentRules(EAttachmentRule::KeepWorld, true);
+	arrow->AttachToComponent(BowMesh, attachmentRules, FName("ArrowSocket"));*/
 }
 
 void ATwilightArcheryCharacter::OnJump()
