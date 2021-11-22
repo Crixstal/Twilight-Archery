@@ -39,6 +39,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera\|Rates")
 	float BaseLookUpRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
+		float maxChargeTime = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
+		float minChargeVelocityMultiplier = 1.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
+		float maxChargeVelocityMultiplier = 1.f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|SpringParameters\|Delays")
 	float delayArmBaseToAim = 2.f;
 
@@ -112,6 +119,10 @@ protected:
 
 	float timerArmCamera = 0.f;
 	float targetArmLength = 0.f;
+
+	float onAimingTimer = 0.f;
+
+	FVector aimHitLocation = FVector::ZeroVector;
 
 protected:
 	// APawn interface

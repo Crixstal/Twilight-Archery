@@ -83,7 +83,20 @@ void ATwilightArcheryCharacter::Tick(float DeltaTime)
 		bool traced = GetWorld()->LineTraceSingleByChannel(hitResult, FollowCamera->GetComponentLocation(), end, ECollisionChannel::ECC_Visibility);
 
 		if (traced)
+		{
 			DrawDebugSphere(GetWorld(), hitResult.Location, 15.f, 16, FColor::Red);
+			aimHitLocation = hitResult.Location;
+		}
+
+		if (bReadyToShoot)
+		{
+			if (onAimingTimer == maxChargeTime) return;
+
+			UE_LOG(LogTemp, Warning, TEXT("AimTime = %f"), onAimingTimer);
+
+			onAimingTimer += GetWorld()->GetDeltaSeconds();
+			onAimingTimer = FMath::Clamp(onAimingTimer, 0.f, maxChargeTime);
+		}
 	}
 }
 
@@ -101,10 +114,7 @@ void ATwilightArcheryCharacter::UpdateCameraBoom()
 
 
 		CameraBoom->TargetArmLength = FMath::Clamp(newLengthTarget, aimArmLength, baseArmLength);
-		//CameraBoom->TargetOffset newOffsetTarget;//FMath::Clamp(newOffsetTarget, aimArmOffset, baseArmOffset);
 		CameraBoom->SocketOffset.Y = FMath::Clamp(newOffsetTargetY, baseArmOffset.Y, aimArmOffset.Y);
-
-		UE_LOG(LogTemp, Warning, TEXT("Offset = %f"), CameraBoom->SocketOffset.Y);
 
 		timerArmCamera -= GetWorld()->GetDeltaSeconds();
 	}
@@ -228,6 +238,12 @@ void ATwilightArcheryCharacter::StartAiming()
 
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
 	targetArmLength = aimArmLength;
+
+	onAimingTimer = 0.f;
+}
+
+float map(float value, float istart, float istop, float ostart, float ostop) {
+	return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 }
 
 void ATwilightArcheryCharacter::StopAiming()
@@ -237,9 +253,19 @@ void ATwilightArcheryCharacter::StopAiming()
 		bHasShoot = true;
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Shooting");
 
-		ArrowMesh2->SetHiddenInGame(true);
+		FVector arrowVelocity = aimHitLocation - ArrowMesh2->GetComponentLocation();
+		arrowVelocity.Normalize();
 
-		//AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ArrowMesh2->GetComponentTransform());
+		float mult = map(onAimingTimer, 0.f, maxChargeTime, minChargeVelocityMultiplier, maxChargeVelocityMultiplier);
+		arrowVelocity *= mult;
+
+		UE_LOG(LogTemp, Warning, TEXT("Charge = %f"), mult);
+		UE_LOG(LogTemp, Warning, TEXT("AimTime = %f"), onAimingTimer);
+
+		AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ArrowMesh2->GetComponentTransform());
+		arrow->Initialize(arrowVelocity);
+
+		ArrowMesh2->SetHiddenInGame(true);
 
 		return;
 	}
@@ -259,6 +285,8 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 	bHasShoot = false;
 	bIsAiming = false;
 
+	onAimingTimer = 0.f;
+
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "StopAiming");
 
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
@@ -272,6 +300,8 @@ void ATwilightArcheryCharacter::OnShootReady()
 	bReadyToShoot = true;
 
 	ArrowMesh2->SetHiddenInGame(false);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "StartCharging");
 
 	/*FTransform transform;
 	FActorSpawnParameters spawnParameters;

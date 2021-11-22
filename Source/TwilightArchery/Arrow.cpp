@@ -11,15 +11,14 @@ AArrow::AArrow()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	root = CreateDefaultSubobject<USceneComponent>("Root");
-	RootComponent = root;
 
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("Capsule collider");
-	CapsuleComponent->SetupAttachment(RootComponent);
+	RootComponent = CapsuleComponent;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	Mesh->SetupAttachment(RootComponent);
 
+	ProjectileComponent = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile Movement");
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +34,13 @@ void AArrow::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AArrow::Initialize(FVector velocity)
+{
+	ProjectileComponent->Velocity = velocity;
+
+	ProjectileComponent->bRotationFollowsVelocity = true;
 }
 
 void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

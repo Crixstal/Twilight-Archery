@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Arrow.generated.h"
 
 UCLASS()
@@ -21,12 +22,14 @@ protected:
 	UPROPERTY(Category = Actor, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* CapsuleComponent;
 
+	UProjectileMovementComponent* ProjectileComponent;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	USceneComponent* root;
-
 public:	
+	void Initialize(FVector velocity);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
