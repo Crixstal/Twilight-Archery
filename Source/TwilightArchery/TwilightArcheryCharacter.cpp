@@ -239,6 +239,8 @@ void ATwilightArcheryCharacter::StopAiming()
 
 		ArrowMesh2->SetHiddenInGame(true);
 
+		//AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ArrowMesh2->GetComponentTransform());
+
 		return;
 	}
 

@@ -27,6 +27,7 @@ void AArrow::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	CapsuleComponent->OnComponentHit.AddDynamic(this, &AArrow::OnCompHit);
 }
 
 // Called every frame
@@ -34,5 +35,10 @@ void AArrow::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "ArrowHit");
 }
 
