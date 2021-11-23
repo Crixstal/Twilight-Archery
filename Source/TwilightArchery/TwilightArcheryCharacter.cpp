@@ -209,9 +209,12 @@ void ATwilightArcheryCharacter::StartSprinting()
 {
 	if (bIsAiming) return;
 
-	bIsSprinting = true;
-
 	GetCharacterMovement()->MaxWalkSpeed = sprintWalkSpeed;
+
+	if (GetVelocity().Size() != 0.f)
+		bIsSprinting = true;
+
+	Stamina->StartSprinting();
 }
 
 void ATwilightArcheryCharacter::StopSprinting()
@@ -221,6 +224,8 @@ void ATwilightArcheryCharacter::StopSprinting()
 	bIsSprinting = false;
 
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+
+	Stamina->StopSprinting();
 }
 
 void ATwilightArcheryCharacter::StartAiming()
@@ -240,6 +245,8 @@ void ATwilightArcheryCharacter::StartAiming()
 	targetArmLength = aimArmLength;
 
 	onAimingTimer = 0.f;
+
+	Stamina->StartAiming();
 }
 
 float map(float value, float istart, float istop, float ostart, float ostop) {
@@ -293,6 +300,8 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 	targetArmLength = baseArmLength;
 
 	bIsAiming = false;
+
+	Stamina->StopAiming();
 }
 
 void ATwilightArcheryCharacter::OnShootReady()
@@ -317,6 +326,8 @@ void ATwilightArcheryCharacter::OnJump()
 	if (bIsAiming) return;
 
 	Jump();
+
+	Stamina->OnJump();
 }
 
 void ATwilightArcheryCharacter::OnStopJumping()
@@ -324,4 +335,6 @@ void ATwilightArcheryCharacter::OnStopJumping()
 	if (bIsAiming) return;
 
 	StopJumping();
+
+	Stamina->OnStopJumping();
 }

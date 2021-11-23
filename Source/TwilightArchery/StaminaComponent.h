@@ -12,7 +12,7 @@ class TWILIGHTARCHERY_API UStaminaComponent : public UActorComponent
 public:
 	UStaminaComponent();
 
-protected:
+//protected:
 	virtual void BeginPlay() override;
 
 	class ATwilightArcheryCharacter* player;
@@ -39,7 +39,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters")
 	bool bShouldDrain = false;
 
-	void SetupInputComponent(class UInputComponent* InputComponent);
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void OnJump();

@@ -32,7 +32,7 @@ public:
 	UPROPERTY(Category = Character, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class AArrow> arrowBP;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"))
 	class UStaminaComponent* Stamina;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
