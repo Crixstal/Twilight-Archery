@@ -18,6 +18,6 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 	ABossCharacter* npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
 
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("Enemy Target is %d"), *npc->target->GetName()));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("Enemy Target is %d"), *npc->target->GetName()));
 	return EBTNodeResult::Succeeded;
 }
