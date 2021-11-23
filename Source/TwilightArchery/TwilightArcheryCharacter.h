@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Curves/CurveFloat.h"
+#include "BowComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/StaticMeshComponent.h"
 #include "TwilightArcheryCharacter.generated.h"
@@ -29,8 +30,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ArrowMesh2;
 
-	UPROPERTY(Category = Character, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class AArrow> arrowBP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
+		float maxChargeTime = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
+		float minChargeVelocityMultiplier = 1.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
+		float maxChargeVelocityMultiplier = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bow")
+	UBowComponent* BowComponent;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|Rates")
@@ -38,13 +46,6 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera\|Rates")
 	float BaseLookUpRate;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
-		float maxChargeTime = 0.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
-		float minChargeVelocityMultiplier = 1.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
-		float maxChargeVelocityMultiplier = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|SpringParameters\|Delays")
 	float delayArmBaseToAim = 2.f;
@@ -64,10 +65,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 	bool bIsSprinting = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bIsAiming = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bHasShoot = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
 	float baseWalkSpeed = 400.f;
@@ -79,12 +76,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnAimingEnd();
 	UFUNCTION(BlueprintCallable)
-	void OnShootReady();
-
+	void DrawArrow();
 
 protected:
-	
-	bool bReadyToShoot = false;
 
 	UFUNCTION()
 	void OnToggleSplitscreen();
@@ -105,24 +99,11 @@ protected:
 	void OnStopJumping();
 
 	void UpdateCameraBoom();
-	/** 
-	 * Called via input to turn at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void TurnAtRate(float Rate);
 
-	/**
-	 * Called via input to turn look up/down at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
+	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
 
 	float timerArmCamera = 0.f;
-	float targetArmLength = 0.f;
-
-	float onAimingTimer = 0.f;
-
-	FVector aimHitLocation = FVector::ZeroVector;
 
 protected:
 	// APawn interface

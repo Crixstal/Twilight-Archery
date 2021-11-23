@@ -51,8 +51,7 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	BowComponent = CreateDefaultSubobject<UBowComponent>("Bow Component");
 }
 
 void ATwilightArcheryCharacter::BeginPlay()
@@ -61,8 +60,6 @@ void ATwilightArcheryCharacter::BeginPlay()
 
 	CameraBoom->TargetArmLength = baseArmLength;
 	CameraBoom->SocketOffset = baseArmOffset;
-
-	targetArmLength = baseArmLength;
 
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
 	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
@@ -75,29 +72,6 @@ void ATwilightArcheryCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateCameraBoom();
-
-	if (bIsAiming)
-	{
-		FHitResult hitResult;
-		FVector end = FollowCamera->GetComponentLocation() + (FollowCamera->GetComponentRotation().Vector() * 100000.f);
-		bool traced = GetWorld()->LineTraceSingleByChannel(hitResult, FollowCamera->GetComponentLocation(), end, ECollisionChannel::ECC_Visibility);
-
-		if (traced)
-		{
-			DrawDebugSphere(GetWorld(), hitResult.Location, 15.f, 16, FColor::Red);
-			aimHitLocation = hitResult.Location;
-		}
-
-		if (bReadyToShoot)
-		{
-			if (onAimingTimer == maxChargeTime) return;
-
-			UE_LOG(LogTemp, Warning, TEXT("AimTime = %f"), onAimingTimer);
-
-			onAimingTimer += GetWorld()->GetDeltaSeconds();
-			onAimingTimer = FMath::Clamp(onAimingTimer, 0.f, maxChargeTime);
-		}
-	}
 }
 
 void ATwilightArcheryCharacter::UpdateCameraBoom()
@@ -105,7 +79,7 @@ void ATwilightArcheryCharacter::UpdateCameraBoom()
 	if (timerArmCamera > 0.f)
 	{
 		float t = timerArmCamera / delayArmBaseToAim;
-		t = bIsAiming ? 1.f - t : t;
+		t = BowComponent->OnAim() ? 1.f - t : t;
 
 		float curveValue = armCurve->GetFloatValue(t);
 
@@ -207,7 +181,7 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 
 void ATwilightArcheryCharacter::StartSprinting()
 {
-	if (bIsAiming) return;
+	if (BowComponent->OnAim()) return;
 
 	bIsSprinting = true;
 
@@ -216,7 +190,7 @@ void ATwilightArcheryCharacter::StartSprinting()
 
 void ATwilightArcheryCharacter::StopSprinting()
 {
-	if (bIsAiming) return;
+	if (BowComponent->OnAim()) return;
 
 	bIsSprinting = false;
 
@@ -228,100 +202,84 @@ void ATwilightArcheryCharacter::StartAiming()
 	if (bIsSprinting)
 		StopSprinting();
 
-	bIsAiming = true;
+	// Set character movement control on aiming
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->MaxWalkSpeed = aimWalkSpeed;
 
-	GetCharacterMovement()->bOrientRotationToMovement = false;
-	GetCharacterMovement()->MaxWalkSpeed = aimWalkSpeed;
+		bUseControllerRotationRoll = true;
+		bUseControllerRotationYaw = true;
+	}
 
-	bUseControllerRotationRoll = true;
-	bUseControllerRotationYaw = true;
-
+	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
-	targetArmLength = aimArmLength;
 
-	onAimingTimer = 0.f;
-}
-
-float map(float value, float istart, float istop, float ostart, float ostop) {
-	return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+	BowComponent->OnStartAiming();
 }
 
 void ATwilightArcheryCharacter::StopAiming()
 {
-	if (bReadyToShoot)
+	if (!BowComponent->OnCharge())
 	{
-		bHasShoot = true;
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Shooting");
-
-		FVector arrowVelocity = aimHitLocation - ArrowMesh2->GetComponentLocation();
-		arrowVelocity.Normalize();
-
-		float mult = map(onAimingTimer, 0.f, maxChargeTime, minChargeVelocityMultiplier, maxChargeVelocityMultiplier);
-		arrowVelocity *= mult;
-
-		UE_LOG(LogTemp, Warning, TEXT("Charge = %f"), mult);
-		UE_LOG(LogTemp, Warning, TEXT("AimTime = %f"), onAimingTimer);
-
-		AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ArrowMesh2->GetComponentTransform());
-		arrow->Initialize(arrowVelocity);
-
-		ArrowMesh2->SetHiddenInGame(true);
-
+		OnAimingEnd();
 		return;
 	}
 
-	OnAimingEnd();
+	FHitResult hitResult;
+	FVector end = FollowCamera->GetComponentLocation() + (FollowCamera->GetComponentRotation().Vector() * 100000.f);
+	bool traced = GetWorld()->LineTraceSingleByChannel(hitResult, FollowCamera->GetComponentLocation(), end, ECollisionChannel::ECC_Visibility);
+	FVector aimHitLocation;
+
+	if (traced)
+		aimHitLocation = hitResult.Location;
+	else
+		aimHitLocation = end;
+
+	FVector shootDirection = aimHitLocation - ArrowMesh2->GetComponentLocation();
+	shootDirection.Normalize();
+	BowComponent->Shoot(shootDirection, ArrowMesh2->GetComponentTransform());
+
+	ArrowMesh2->SetHiddenInGame(true);
 }
 
 void ATwilightArcheryCharacter::OnAimingEnd()
 {
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+	if (!BowComponent->OnAim()) return;
 
-	bUseControllerRotationRoll = false;
-	bUseControllerRotationYaw = false;
+	BowComponent->OnEndAiming();
 
-	bReadyToShoot = false;
-	bHasShoot = false;
-	bIsAiming = false;
+	// Set base character movement control
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 
-	onAimingTimer = 0.f;
+		bUseControllerRotationRoll = false;
+		bUseControllerRotationYaw = false;
+	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "StopAiming");
 
+	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
-	targetArmLength = baseArmLength;
-
-	bIsAiming = false;
 }
 
-void ATwilightArcheryCharacter::OnShootReady()
+void ATwilightArcheryCharacter::DrawArrow()
 {
-	bReadyToShoot = true;
-
 	ArrowMesh2->SetHiddenInGame(false);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "StartCharging");
-
-	/*FTransform transform;
-	FActorSpawnParameters spawnParameters;
-
-	AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP);
-
-	FAttachmentTransformRules attachmentRules(EAttachmentRule::KeepWorld, true);
-	arrow->AttachToComponent(BowMesh, attachmentRules, FName("ArrowSocket"));*/
+	BowComponent->OnDrawArrow();
 }
 
 void ATwilightArcheryCharacter::OnJump()
 {
-	if (bIsAiming) return;
+	if (BowComponent->OnAim()) return;
 
 	Jump();
 }
 
 void ATwilightArcheryCharacter::OnStopJumping()
 {
-	if (bIsAiming) return;
+	if (BowComponent->OnAim()) return;
 
 	StopJumping();
 }
