@@ -64,7 +64,9 @@ void ATwilightArcheryCharacter::BeginPlay()
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
 	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
 
-	ArrowMesh2->SetHiddenInGame(true);
+	ArrowMesh2->Deactivate();
+
+	//ArrowMesh2->SetHiddenInGame(true);
 }
 
 void ATwilightArcheryCharacter::Tick(float DeltaTime)
@@ -246,7 +248,8 @@ void ATwilightArcheryCharacter::StopAiming()
 	BowComponent->Shoot(shootDirection, ArrowMesh2->GetComponentTransform());
 
 	// Hide arrow mesh on bow socket
-	ArrowMesh2->SetHiddenInGame(true);
+	//ArrowMesh2->SetHiddenInGame(true);
+	ArrowMesh2->Deactivate();
 }
 
 void ATwilightArcheryCharacter::OnAimingEnd()
@@ -272,7 +275,8 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 void ATwilightArcheryCharacter::DrawArrow()
 {
 	// On Ready to shoot
-	ArrowMesh2->SetHiddenInGame(false);
+	//ArrowMesh2->SetHiddenInGame(false);
+	ArrowMesh2->Activate(true);
 	BowComponent->OnDrawArrow();
 }
 
