@@ -68,6 +68,8 @@ public:
 	bool bIsAiming = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 	bool bHasShoot = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+	bool bIsDodging = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
 	float baseWalkSpeed = 400.f;

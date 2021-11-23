@@ -6,10 +6,10 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "DrawDebugHelpers.h"
 #include "Arrow.h"
-#include "GameFramework/SpringArmComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATwilightArcheryCharacter
