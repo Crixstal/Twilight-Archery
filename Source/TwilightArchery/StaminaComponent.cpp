@@ -66,6 +66,7 @@ void UStaminaComponent::OnStopJumping()
 void UStaminaComponent::StartAiming()
 {
 	player->bIsAiming = true;
+	player->GetMesh()->SetScalarParameterValueOnMaterials("Shoot", 1.f);
 	bShouldDrain = true;
 	Drain(aimDrain);
 }
@@ -73,6 +74,7 @@ void UStaminaComponent::StartAiming()
 void UStaminaComponent::StopAiming()
 {
 	player->bIsAiming = false;
+	player->GetMesh()->SetScalarParameterValueOnMaterials("Shoot", 0.f);
 	bShouldDrain = false;
 	player->GetWorldTimerManager().SetTimer(regenTimer, this, &UStaminaComponent::Regen, deltaTime, true, regenDelay);
 }

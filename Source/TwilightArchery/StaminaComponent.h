@@ -22,7 +22,7 @@ protected:
 	float regenDelay = 2.f;
 	float deltaTime = 0.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	float currentStamina = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	float maxStamina = 100.f;
