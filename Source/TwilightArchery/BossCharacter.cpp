@@ -44,3 +44,18 @@ void ABossCharacter::Tick(float DeltaTime)
 void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 }
+
+void ABossCharacter::Clock()
+{
+	if (focustime > 0)
+	{
+		focustime -= 1.f;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("-1 seconde")));
+
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("EndCoolDown")));
+		haveATarget = false;
+	}
+}
