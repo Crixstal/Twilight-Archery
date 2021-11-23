@@ -31,7 +31,13 @@ void ABossCharacter::BeginPlay()
 	hitBoxBody->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 
+	world = GetWorld();
 
+	for (FConstPlayerControllerIterator iter = world->GetPlayerControllerIterator(); iter; ++iter)
+	{
+		AController* pl = Cast<AController>(*iter);
+		Players.Add(pl);
+	}
 }
 
 // Called every frame

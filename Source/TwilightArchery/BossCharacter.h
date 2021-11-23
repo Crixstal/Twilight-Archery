@@ -49,4 +49,6 @@ public:
 	float focusingTimeMax = 8.f;
 	float focustime = 0.f;
 	void Clock();
+	UWorld* world;
+	TArray<AController*> Players;
 };

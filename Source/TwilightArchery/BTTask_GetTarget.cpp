@@ -18,38 +18,20 @@ UBTTask_GetTarget::UBTTask_GetTarget(FObjectInitializer const& object_initialize
 
 EBTNodeResult::Type UBTTask_GetTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	//TArray<AActor*> FoundPlayer;
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATwilightArcheryCharacter::StaticClass(), FoundPlayer);
 	AAIController* actualEnemy = OwnerComp.GetAIOwner();
 	ABossCharacter* npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
-	ATwilightArcheryCharacter* me = Cast<ATwilightArcheryCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
-
-	UWorld* world = GetWorld();
-
-	TArray<AController*> Players;
-	for (FConstPlayerControllerIterator iter = world->GetPlayerControllerIterator(); iter; ++iter)
-	{
-		AController* pl = Cast<AController>(*iter);
-		if (!pl)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PlayerNotValid")));
-			return EBTNodeResult::Failed;
-		}
-		Players.Add(pl);
-	}
-	
 	float minDist = -1;
 	int incr = -1;
 
-	if (Players.Num() > 0)
+	if (npc->Players.Num() > 0)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("Player is %f %f %f"), me->GetActorLocation().X, me->GetActorLocation().Y, me->GetActorLocation().Z));
-		for (int i = 0; i < Players.Num(); i++)
+		for (int i = 0; i < npc->Players.Num(); i++)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Possible target is %f %f %f"), Players[i]->GetPawn()->GetActorLocation().X, Players[i]->GetPawn()->GetActorLocation().Y, Players[i]->GetPawn()->GetActorLocation().Z));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Possible target is %f %f %f"), npc->Players[i]->GetPawn()->GetActorLocation().X, npc->Players[i]->GetPawn()->GetActorLocation().Y, npc->Players[i]->GetPawn()->GetActorLocation().Z));
 			
-			FVector savePos = Players[i]->GetPawn()->GetActorLocation();
+			FVector savePos = npc->Players[i]->GetPawn()->GetActorLocation();
 			if (FVector::Dist(savePos, npc->GetActorLocation()) < minDist || minDist == -1)
 			{
 				minDist = FVector::Dist(savePos, npc->GetActorLocation());
@@ -57,7 +39,7 @@ EBTNodeResult::Type UBTTask_GetTarget::ExecuteTask(UBehaviorTreeComponent& Owner
 			}
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("min dist is %f"), minDist));
-		npc->target = Players[incr]->GetPawn();
+		npc->target = npc->Players[incr]->GetPawn();
 		npc->focustime = FMath::RandRange(npc->focusingTimeMin, npc->focusingTimeMax);
 		npc->GetWorldTimerManager().SetTimer(npc->TimerHandleClock, npc, &ABossCharacter::Clock, 0.8f, true);
 		npc->haveATarget = true;
