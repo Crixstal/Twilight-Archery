@@ -19,8 +19,7 @@ void UBowComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	arrowsCount = maxArrows;
 }
 
 // Called every frame
@@ -66,18 +65,23 @@ void UBowComponent::Shoot(FVector ShootDirection, FTransform ShootTransform)
 	bHasShoot = true;
 	bIsCharging = false;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "Shooting");
-
 	float mult = map(timerCharge, 0.f, maxChargeTime, minChargeVelocityMultiplier, maxChargeVelocityMultiplier);
 	FVector arrowVelocity = ShootDirection * mult;
 
 	AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ShootTransform);
 	arrow->Initialize(arrowVelocity);
+
+	Reload();
 }
 
 void UBowComponent::Reload()
 {
+	if (arrowsCount == 0) return;
 
+	arrowsCount -= 1;
+
+	if (arrowsCount == 0)
+		bCanShoot = false;
 }
 
 bool UBowComponent::OnCharge()
@@ -93,4 +97,9 @@ bool UBowComponent::OnAim()
 bool UBowComponent::HasShoot()
 {
 	return bHasShoot;
+}
+
+bool UBowComponent::CanShoot()
+{
+	return bCanShoot;
 }

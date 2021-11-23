@@ -24,13 +24,19 @@ public:
 	UPROPERTY(Category = "Self\|Arrow", EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class AArrow> arrowBP;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Self\|Arrow")
+		int maxArrows = 5;
+
 protected:
 
 	bool bIsCharging = false;
 	bool bIsAiming = false;
 	bool bHasShoot = false;
+	bool bCanShoot = true;
 
 	float timerCharge = 0.f;
+
+	int arrowsCount = 0;
 
 public:
 
@@ -55,4 +61,6 @@ public:
 	bool OnAim();
 	UFUNCTION(BlueprintCallable)
 	bool HasShoot();
+
+	bool CanShoot();
 };

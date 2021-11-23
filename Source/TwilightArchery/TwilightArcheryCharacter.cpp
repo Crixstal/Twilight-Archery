@@ -199,6 +199,8 @@ void ATwilightArcheryCharacter::StopSprinting()
 
 void ATwilightArcheryCharacter::StartAiming()
 {
+	if (!BowComponent->CanShoot()) return;
+
 	if (bIsSprinting)
 		StopSprinting();
 
@@ -219,31 +221,37 @@ void ATwilightArcheryCharacter::StartAiming()
 
 void ATwilightArcheryCharacter::StopAiming()
 {
+	// Check if the bow is charged
 	if (!BowComponent->OnCharge())
 	{
 		OnAimingEnd();
 		return;
 	}
 
+	// Line trace to determine the impact target point
 	FHitResult hitResult;
 	FVector end = FollowCamera->GetComponentLocation() + (FollowCamera->GetComponentRotation().Vector() * 100000.f);
 	bool traced = GetWorld()->LineTraceSingleByChannel(hitResult, FollowCamera->GetComponentLocation(), end, ECollisionChannel::ECC_Visibility);
 	FVector aimHitLocation;
 
+	// Check if aiming on void or not
 	if (traced)
 		aimHitLocation = hitResult.Location;
 	else
 		aimHitLocation = end;
 
+	// Shoot with bow
 	FVector shootDirection = aimHitLocation - ArrowMesh2->GetComponentLocation();
 	shootDirection.Normalize();
 	BowComponent->Shoot(shootDirection, ArrowMesh2->GetComponentTransform());
 
+	// Hide arrow mesh on bow socket
 	ArrowMesh2->SetHiddenInGame(true);
 }
 
 void ATwilightArcheryCharacter::OnAimingEnd()
 {
+	// Check if currently aiming
 	if (!BowComponent->OnAim()) return;
 
 	BowComponent->OnEndAiming();
@@ -257,16 +265,14 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 		bUseControllerRotationYaw = false;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "StopAiming");
-
 	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
 }
 
 void ATwilightArcheryCharacter::DrawArrow()
 {
+	// On Ready to shoot
 	ArrowMesh2->SetHiddenInGame(false);
-
 	BowComponent->OnDrawArrow();
 }
 
