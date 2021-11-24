@@ -34,6 +34,7 @@ protected:
 	bool bHasShoot = false;
 	bool bCanShoot = true;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Charge")
 	float timerCharge = 0.f;
 
 	int arrowsCount = 0;
