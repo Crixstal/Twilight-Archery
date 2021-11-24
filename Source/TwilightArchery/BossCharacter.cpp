@@ -45,7 +45,6 @@ void ABossCharacter::BeginPlay()
 void ABossCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -85,7 +84,6 @@ void ABossCharacter::Attacking()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ATTACK")));
 		GEngine->ClearDebugDisplayProperties();
 		ABossCharacter::StopBasicAttack();
 	}
@@ -101,6 +99,7 @@ void ABossCharacter::BasicAttack()
 void ABossCharacter::StopBasicAttack()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandleAtt);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ATTACK")));
 	hitBoxBasicAttack->OnComponentBeginOverlap.RemoveDynamic(this, &ABossCharacter::OnOverlapBegin);
 	isAttacking = false;
 	attackingTime = 4.f;

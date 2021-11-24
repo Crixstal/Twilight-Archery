@@ -18,8 +18,13 @@ bool UBTDecorator_IsNearPlayer::CalculateRawConditionValue(UBehaviorTreeComponen
 
 	float distancePlayerEnemy = FVector::Dist(npc->GetActorLocation(), npc->target->GetActorLocation());
 
-	if ((distancePlayerEnemy <= 250 && !npc->isAttacking) || npc->isAttacking)
+	if ((distancePlayerEnemy <= 200 && !npc->isAttacking) || npc->isAttacking)
+	{
+		/*FVector FacingVector = {(npc->GetActorLocation().X + npc->target->GetActorLocation().X) / 2, (npc->GetActorLocation().X + npc->target->GetActorLocation().X) / 2,0};
+		FRotator FacingRotator = FacingVector.Rotation();
+		npc->SetActorRotation(FacingRotator, ETeleportType::None);*/
 		return false;
+	}
 	else
 		return true;
 }
