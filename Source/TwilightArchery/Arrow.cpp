@@ -33,7 +33,6 @@ void AArrow::BeginPlay()
 void AArrow::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AArrow::Initialize(FVector velocity)
@@ -46,5 +45,7 @@ void AArrow::Initialize(FVector velocity)
 void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "ArrowHit");
+
+	ProjectileComponent->DestroyComponent();
 }
 

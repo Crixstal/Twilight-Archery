@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Curves/CurveFloat.h"
+#include "BowComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/StaticMeshComponent.h"
 #include "TwilightArcheryCharacter.generated.h"
@@ -13,56 +14,51 @@ class ATwilightArcheryCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
 public:
 	ATwilightArcheryCharacter();
 
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* BowMesh;
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
+		class USpringArmComponent* CameraBoom;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
+		class UCameraComponent* FollowCamera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+public:
+
+	UPROPERTY(Category = "SelfParameters\|Components", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* BowMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ArrowMesh2;
 
-	UPROPERTY(Category = Character, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class AArrow> arrowBP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Components")
+	UBowComponent* BowComponent;
 
+
+
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"))
 	class UStaminaComponent* Stamina;
-
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|Rates")
+	// _______________________CAMERA PARAMETERS_____________________________
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|Rates")
+	
 	float BaseTurnRate;
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera\|Rates")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Camera\|Rates")
 	float BaseLookUpRate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
-		float maxChargeTime = 0.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
-		float minChargeVelocityMultiplier = 1.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Aim\|Charge")
-		float maxChargeVelocityMultiplier = 1.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|SpringParameters\|Delays")
-	float delayArmBaseToAim = 2.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|SpringParameters\|Curves")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|SpringParameters\|Curves")
 	UCurveFloat* armCurve;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|SpringParameters\|Base")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|SpringParameters\|Delays")
+	float delayArmBaseToAim = 2.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|SpringParameters\|Base")
 	float baseArmLength = 400.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|SpringParameters\|Base")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|SpringParameters\|Base")
 	FVector baseArmOffset = FVector::ZeroVector;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|SpringParameters\|Aim")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|SpringParameters\|Aim")
 	float aimArmLength = 150.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera\|SpringParameters\|Aim")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|SpringParameters\|Aim")
 	FVector aimArmOffset = FVector::ZeroVector;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
@@ -74,30 +70,31 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 	bool bIsDodging = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
+	// _______________________SPEEDS PARAMETERS_____________________________
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
 	float baseWalkSpeed = 400.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
 	float sprintWalkSpeed = 550.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Speeds")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
 	float aimWalkSpeed = 300.f;
+
+
+	// _______________________OTHER PARAMETERS_____________________________
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+		bool bIsSprinting = false;
+
 
 	UFUNCTION(BlueprintCallable)
 	void OnAimingEnd();
 	UFUNCTION(BlueprintCallable)
-	void OnShootReady();
+	void DrawArrow();
 
-
-protected:
-	
-	bool bReadyToShoot = false;
+private:
 
 	UFUNCTION()
 	void OnToggleSplitscreen();
 
-	/** Called for forwards/backward input */
 	void MoveForward(float Value);
-
-	/** Called for side to side input */
 	void MoveRight(float Value);
 
 	void StartSprinting();
@@ -109,25 +106,14 @@ protected:
 	void OnJump();
 	void OnStopJumping();
 
-	void UpdateCameraBoom();
-	/** 
-	 * Called via input to turn at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void TurnAtRate(float Rate);
+	void PauseGame();
 
-	/**
-	 * Called via input to turn look up/down at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
+	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
 
+	void UpdateCameraBoom();
+
 	float timerArmCamera = 0.f;
-	float targetArmLength = 0.f;
-
-	float onAimingTimer = 0.f;
-
-	FVector aimHitLocation = FVector::ZeroVector;
 
 protected:
 	// APawn interface
