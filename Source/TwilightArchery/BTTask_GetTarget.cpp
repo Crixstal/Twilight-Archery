@@ -41,11 +41,11 @@ EBTNodeResult::Type UBTTask_GetTarget::ExecuteTask(UBehaviorTreeComponent& Owner
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("min dist is %f"), minDist));
 		npc->target = npc->Players[incr]->GetPawn();
 		npc->focustime = FMath::RandRange(npc->focusingTimeMin, npc->focusingTimeMax);
-		npc->GetWorldTimerManager().SetTimer(npc->TimerHandleClock, npc, &ABossCharacter::Clock, 0.8f, true);
+		npc->GetWorldTimerManager().SetTimer(npc->TimerHandleKFOT, npc, &ABossCharacter::KeepFocusOnTarget, 0.8f, true);
 		npc->haveATarget = true;
 
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Enemy Target is %f %f %f"), npc->target->GetActorLocation().X, npc->target->GetActorLocation().Y, npc->target->GetActorLocation().Z));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Enemy is focusing the target for %f sec"), npc->focustime));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Enemy is focusing the target for %d sec"), npc->focustime));
 	}
 
 	return EBTNodeResult::Succeeded;

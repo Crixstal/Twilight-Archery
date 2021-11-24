@@ -43,12 +43,21 @@ public:
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-
-	FTimerHandle TimerHandleClock;
-	float focusingTimeMin = 3.f;
-	float focusingTimeMax = 8.f;
-	float focustime = 0.f;
-	void Clock();
+	FTimerHandle TimerHandleKFOT;
+	int focusingTimeMin = 3.f;
+	int focusingTimeMax = 8.f;
+	int focustime = 0.f;
+	void KeepFocusOnTarget();
+	
 	UWorld* world;
 	TArray<AController*> Players;
+
+	FTimerHandle TimerHandleAtt;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Attack")
+		bool isAttacking = false;
+	int attackingTime = 4.f;
+	void Attacking();
+	void Attack();
+	void StopAttack();
 };

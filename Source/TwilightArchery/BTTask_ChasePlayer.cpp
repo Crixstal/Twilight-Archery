@@ -3,6 +3,7 @@
 
 #include "BTTask_ChasePlayer.h"
 #include "GameFramework/Character.h"
+#include "TwilightArcheryCharacter.h"
 #include "BossCharacter.h"
 #include "AIController.h"
 
@@ -16,8 +17,9 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 {
 	AAIController* actualEnemy = OwnerComp.GetAIOwner();
 	ABossCharacter* npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
+	ATwilightArcheryCharacter* me = Cast<ATwilightArcheryCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	
+	actualEnemy->MoveToLocation(npc->target->GetActorLocation(), 1.f, false);
 
-
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("Enemy Target is %d"), *npc->target->GetName()));
 	return EBTNodeResult::Succeeded;
 }

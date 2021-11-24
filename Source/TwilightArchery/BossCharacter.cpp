@@ -51,7 +51,7 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 {
 }
 
-void ABossCharacter::Clock()
+void ABossCharacter::KeepFocusOnTarget()
 {
 	if (focustime > 0)
 	{
@@ -63,5 +63,34 @@ void ABossCharacter::Clock()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("EndCoolDown")));
 		haveATarget = false;
+		GetWorldTimerManager().ClearTimer(TimerHandleKFOT);
 	}
+}
+
+void ABossCharacter::Attacking()
+{
+	if (attackingTime > 0)
+	{
+		attackingTime -= 1.f;
+	}
+	else
+	{
+		GEngine->ClearDebugDisplayProperties();
+		ABossCharacter::StopAttack();
+	}
+}
+
+void ABossCharacter::Attack()
+{
+	//hitBoxHammer->OnComponentBeginOverlap.AddDynamic(this, &AMyDwarfEnemy::OnOverlapBegin);
+	isAttacking = true;
+	GetWorldTimerManager().SetTimer(TimerHandleAtt, this, &ABossCharacter::Attacking, 1.f, true);
+}
+
+void ABossCharacter::StopAttack()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandleAtt);
+	//hitBoxHammer->OnComponentBeginOverlap.RemoveDynamic(this, &AMyDwarfEnemy::OnOverlapBegin);
+	isAttacking = false;
+	attackingTime = 4.f;
 }
