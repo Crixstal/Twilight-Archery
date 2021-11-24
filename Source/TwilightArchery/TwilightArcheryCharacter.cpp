@@ -228,12 +228,8 @@ void ATwilightArcheryCharacter::StartAiming()
 
 	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
-	targetArmLength = aimArmLength;
-
-	onAimingTimer = 0.f;
 
 	Stamina->StartAiming();
-}
 
 	BowComponent->OnStartAiming();
 }
@@ -287,7 +283,6 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 
 	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
-	targetArmLength = baseArmLength;
 
 	bIsAiming = false;
 

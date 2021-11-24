@@ -34,10 +34,9 @@ public:
 	UBowComponent* BowComponent;
 
 
-
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"))
 	class UStaminaComponent* Stamina;
+
 	// _______________________CAMERA PARAMETERS_____________________________
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|Rates")
 	
@@ -61,14 +60,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|SpringParameters\|Aim")
 	FVector aimArmOffset = FVector::ZeroVector;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bIsSprinting = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bIsAiming = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bHasShoot = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bIsDodging = false;
 
 	// _______________________SPEEDS PARAMETERS_____________________________
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
@@ -81,7 +72,13 @@ public:
 
 	// _______________________OTHER PARAMETERS_____________________________
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-		bool bIsSprinting = false;
+	bool bIsSprinting = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+	bool bIsAiming = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+	bool bHasShoot = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+	bool bIsDodging = false;
 
 
 	UFUNCTION(BlueprintCallable)
