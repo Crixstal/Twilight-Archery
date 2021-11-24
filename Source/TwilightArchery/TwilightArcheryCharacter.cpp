@@ -7,6 +7,8 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "DrawDebugHelpers.h"
+#include "Arrow.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -30,13 +32,19 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+
+	BowMesh = CreateOptionalDefaultSubobject<USkeletalMeshComponent>(TEXT("BowMesh"));
+	BowMesh->SetupAttachment(GetMesh(), FName("BowSocket"));
+
+	ArrowMesh2 = CreateOptionalDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowMesh"));
+	ArrowMesh2->SetupAttachment(BowMesh, FName("ArrowSocket"));
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
@@ -44,8 +52,49 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	BowComponent = CreateDefaultSubobject<UBowComponent>("Bow Component");
+}
+
+void ATwilightArcheryCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CameraBoom->TargetArmLength = baseArmLength;
+	CameraBoom->SocketOffset = baseArmOffset;
+
+	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
+	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
+
+	ArrowMesh2->Deactivate();
+
+	//ArrowMesh2->SetHiddenInGame(true);
+}
+
+void ATwilightArcheryCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UpdateCameraBoom();
+}
+
+void ATwilightArcheryCharacter::UpdateCameraBoom()
+{
+	if (timerArmCamera > 0.f)
+	{
+		float t = timerArmCamera / delayArmBaseToAim;
+		t = BowComponent->OnAim() ? 1.f - t : t;
+
+		float curveValue = armCurve->GetFloatValue(t);
+
+		float newLengthTarget = FMath::Lerp(baseArmLength, aimArmLength, curveValue);
+		float newOffsetTargetY = FMath::Lerp(baseArmOffset.Y, aimArmOffset.Y, curveValue);
+
+
+		CameraBoom->TargetArmLength = FMath::Clamp(newLengthTarget, aimArmLength, baseArmLength);
+		CameraBoom->SocketOffset.Y = FMath::Clamp(newOffsetTargetY, baseArmOffset.Y, aimArmOffset.Y);
+
+		timerArmCamera -= GetWorld()->GetDeltaSeconds();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,8 +107,14 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 	PlayerInputComponent->BindAction("Toggle Splitscreen", IE_Pressed, this, &ATwilightArcheryCharacter::OnToggleSplitscreen);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ATwilightArcheryCharacter::OnJump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ATwilightArcheryCharacter::OnStopJumping);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed,  this, &ATwilightArcheryCharacter::StartSprinting);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATwilightArcheryCharacter::StopSprinting);
+
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ATwilightArcheryCharacter::StartAiming);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ATwilightArcheryCharacter::StopAiming);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATwilightArcheryCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATwilightArcheryCharacter::MoveRight);
@@ -75,7 +130,7 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 void ATwilightArcheryCharacter::OnToggleSplitscreen()
 {
-	auto gameViewport = GetWorld()->GetGameViewport();
+	/*auto gameViewport = GetWorld()->GetGameViewport();
 
 	gameViewport->SetForceDisableSplitscreen(!gameViewport->IsSplitscreenForceDisabled());
 
@@ -85,7 +140,7 @@ void ATwilightArcheryCharacter::OnToggleSplitscreen()
 	if (gameViewport->IsSplitscreenForceDisabled())
 	{
 		GEngine->AddOnScreenDebugMessage(1, 2, FColor::Red, "Sscreen disabled");
-	}
+	}*/
 }
 
 void ATwilightArcheryCharacter::TurnAtRate(float Rate)
@@ -127,4 +182,117 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ATwilightArcheryCharacter::StartSprinting()
+{
+	if (BowComponent->OnAim()) return;
+
+	bIsSprinting = true;
+
+	GetCharacterMovement()->MaxWalkSpeed = sprintWalkSpeed;
+}
+
+void ATwilightArcheryCharacter::StopSprinting()
+{
+	if (BowComponent->OnAim()) return;
+
+	bIsSprinting = false;
+
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+}
+
+void ATwilightArcheryCharacter::StartAiming()
+{
+	if (!BowComponent->CanShoot()) return;
+
+	if (bIsSprinting)
+		StopSprinting();
+
+	// Set character movement control on aiming
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->MaxWalkSpeed = aimWalkSpeed;
+
+		bUseControllerRotationRoll = true;
+		bUseControllerRotationYaw = true;
+	}
+
+	// Init timer lerp camera boom
+	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
+
+	BowComponent->OnStartAiming();
+}
+
+void ATwilightArcheryCharacter::StopAiming()
+{
+	// Check if the bow is charged
+	if (!BowComponent->OnCharge())
+	{
+		OnAimingEnd();
+		return;
+	}
+
+	// Line trace to determine the impact target point
+	FHitResult hitResult;
+	FVector end = FollowCamera->GetComponentLocation() + (FollowCamera->GetComponentRotation().Vector() * 100000.f);
+	bool traced = GetWorld()->LineTraceSingleByChannel(hitResult, FollowCamera->GetComponentLocation(), end, ECollisionChannel::ECC_Visibility);
+	FVector aimHitLocation;
+
+	// Check if aiming on void or not
+	if (traced)
+		aimHitLocation = hitResult.Location;
+	else
+		aimHitLocation = end;
+
+	// Shoot with bow
+	FVector shootDirection = aimHitLocation - ArrowMesh2->GetComponentLocation();
+	shootDirection.Normalize();
+	BowComponent->Shoot(shootDirection, ArrowMesh2->GetComponentTransform());
+
+	// Hide arrow mesh on bow socket
+	//ArrowMesh2->SetHiddenInGame(true);
+	ArrowMesh2->Deactivate();
+}
+
+void ATwilightArcheryCharacter::OnAimingEnd()
+{
+	// Check if currently aiming
+	if (!BowComponent->OnAim()) return;
+
+	BowComponent->OnEndAiming();
+
+	// Set base character movement control
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+
+		bUseControllerRotationRoll = false;
+		bUseControllerRotationYaw = false;
+	}
+
+	// Init timer lerp camera boom
+	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
+}
+
+void ATwilightArcheryCharacter::DrawArrow()
+{
+	// On Ready to shoot
+	//ArrowMesh2->SetHiddenInGame(false);
+	ArrowMesh2->Activate(true);
+	BowComponent->OnDrawArrow();
+}
+
+void ATwilightArcheryCharacter::OnJump()
+{
+	if (BowComponent->OnAim()) return;
+
+	Jump();
+}
+
+void ATwilightArcheryCharacter::OnStopJumping()
+{
+	if (BowComponent->OnAim()) return;
+
+	StopJumping();
 }
