@@ -18,7 +18,8 @@ ABossCharacter::ABossCharacter()
 	hitBoxLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftLeg"));
 	hitBoxLegs->SetupAttachment(RootComponent);
 
-
+	hitBoxBasicAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBasicAttack"));
+	hitBoxBasicAttack->SetupAttachment(RootComponent);
 	
 }
 
@@ -49,6 +50,14 @@ void ABossCharacter::Tick(float DeltaTime)
 
 void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OverlappedComp->GetName() == "BoxBasicAttack")
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("hit %d"), *OtherActor->GetName()));
+		if(OtherComp->GetName() == "CollisionCylinder" && OtherActor->Tags[0] == "Player")
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
+		}
+	}
 }
 
 void ABossCharacter::KeepFocusOnTarget()
@@ -56,12 +65,12 @@ void ABossCharacter::KeepFocusOnTarget()
 	if (focustime > 0)
 	{
 		focustime -= 1.f;
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("-1 seconde")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("-1 seconde")));
 
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("EndCoolDown")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("EndCoolDown")));
 		haveATarget = false;
 		GetWorldTimerManager().ClearTimer(TimerHandleKFOT);
 	}
@@ -71,26 +80,28 @@ void ABossCharacter::Attacking()
 {
 	if (attackingTime > 0)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("-1 seconde")));
 		attackingTime -= 1.f;
 	}
 	else
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ATTACK")));
 		GEngine->ClearDebugDisplayProperties();
-		ABossCharacter::StopAttack();
+		ABossCharacter::StopBasicAttack();
 	}
 }
 
-void ABossCharacter::Attack()
+void ABossCharacter::BasicAttack()
 {
-	//hitBoxHammer->OnComponentBeginOverlap.AddDynamic(this, &AMyDwarfEnemy::OnOverlapBegin);
+	hitBoxBasicAttack->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	isAttacking = true;
 	GetWorldTimerManager().SetTimer(TimerHandleAtt, this, &ABossCharacter::Attacking, 1.f, true);
 }
 
-void ABossCharacter::StopAttack()
+void ABossCharacter::StopBasicAttack()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandleAtt);
-	//hitBoxHammer->OnComponentBeginOverlap.RemoveDynamic(this, &AMyDwarfEnemy::OnOverlapBegin);
+	hitBoxBasicAttack->OnComponentBeginOverlap.RemoveDynamic(this, &ABossCharacter::OnOverlapBegin);
 	isAttacking = false;
 	attackingTime = 4.f;
 }

@@ -15,10 +15,10 @@ EBTNodeResult::Type UBTTask_BasicAttack::ExecuteTask(UBehaviorTreeComponent& Own
 	AAIController* actualEnemy = OwnerComp.GetAIOwner();
 	ABossCharacter* npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
 
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CAN ATTACK")));
 	if (!npc->isAttacking)
 	{
-		npc->Attack();
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ATTACK")));
+		npc->BasicAttack();
 	}
 
 	return EBTNodeResult::Succeeded;

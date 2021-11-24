@@ -58,6 +58,11 @@ public:
 		bool isAttacking = false;
 	int attackingTime = 4.f;
 	void Attacking();
-	void Attack();
-	void StopAttack();
+
+	
+	UPROPERTY(VisibleAnywhere, Category = "Components BasicAttack")
+		class UBoxComponent* hitBoxBasicAttack;
+
+	void BasicAttack();
+	void StopBasicAttack();
 };

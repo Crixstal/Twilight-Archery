@@ -29,7 +29,7 @@ EBTNodeResult::Type UBTTask_GetTarget::ExecuteTask(UBehaviorTreeComponent& Owner
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("Player is %f %f %f"), me->GetActorLocation().X, me->GetActorLocation().Y, me->GetActorLocation().Z));
 		for (int i = 0; i < npc->Players.Num(); i++)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Possible target is %f %f %f"), npc->Players[i]->GetPawn()->GetActorLocation().X, npc->Players[i]->GetPawn()->GetActorLocation().Y, npc->Players[i]->GetPawn()->GetActorLocation().Z));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Possible target is %f %f %f"), npc->Players[i]->GetPawn()->GetActorLocation().X, npc->Players[i]->GetPawn()->GetActorLocation().Y, npc->Players[i]->GetPawn()->GetActorLocation().Z));
 			
 			FVector savePos = npc->Players[i]->GetPawn()->GetActorLocation();
 			if (FVector::Dist(savePos, npc->GetActorLocation()) < minDist || minDist == -1)
@@ -38,14 +38,14 @@ EBTNodeResult::Type UBTTask_GetTarget::ExecuteTask(UBehaviorTreeComponent& Owner
 				incr = i;
 			}
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("min dist is %f"), minDist));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("min dist is %f"), minDist));
 		npc->target = npc->Players[incr]->GetPawn();
 		npc->focustime = FMath::RandRange(npc->focusingTimeMin, npc->focusingTimeMax);
 		npc->GetWorldTimerManager().SetTimer(npc->TimerHandleKFOT, npc, &ABossCharacter::KeepFocusOnTarget, 0.8f, true);
 		npc->haveATarget = true;
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Enemy Target is %f %f %f"), npc->target->GetActorLocation().X, npc->target->GetActorLocation().Y, npc->target->GetActorLocation().Z));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Enemy is focusing the target for %d sec"), npc->focustime));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Enemy Target is %f %f %f"), npc->target->GetActorLocation().X, npc->target->GetActorLocation().Y, npc->target->GetActorLocation().Z));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Enemy is focusing the target for %d sec"), npc->focustime));
 	}
 
 	return EBTNodeResult::Succeeded;
