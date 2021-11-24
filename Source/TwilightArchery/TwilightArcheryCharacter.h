@@ -37,13 +37,18 @@ public:
 
 
 	// _______________________CAMERA PARAMETERS_____________________________
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SelfParameters\| Camera", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Camera", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UMatineeCameraShake> ShootShake;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|Rates")
 	float BaseTurnRate;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Camera\|Rates")
 	float BaseLookUpRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|FOV")
+	float baseCamFOV = 90.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|FOV")
+	float aimCamFOV = 70.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|SpringParameters\|Curves")
 	UCurveFloat* armCurve;
