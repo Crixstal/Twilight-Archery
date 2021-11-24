@@ -3,6 +3,7 @@
 #include "TwilightArcheryGameMode.h"
 #include "TwilightArcheryCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 ATwilightArcheryGameMode::ATwilightArcheryGameMode()
 {
@@ -12,4 +13,9 @@ ATwilightArcheryGameMode::ATwilightArcheryGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+}
+
+void ATwilightArcheryGameMode::BeginPlay()
+{
+	//UGameplayStatics::CreatePlayer(GetWorld());
 }
