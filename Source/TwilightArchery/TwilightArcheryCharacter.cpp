@@ -10,6 +10,7 @@
 #include "DrawDebugHelpers.h"
 #include "Arrow.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATwilightArcheryCharacter
@@ -114,6 +115,9 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ATwilightArcheryCharacter::StartAiming);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ATwilightArcheryCharacter::StopAiming);
+
+	FInputActionBinding& toggle = PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &ATwilightArcheryCharacter::PauseGame);
+	toggle.bExecuteWhenPaused = true;
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATwilightArcheryCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATwilightArcheryCharacter::MoveRight);
@@ -292,4 +296,25 @@ void ATwilightArcheryCharacter::OnStopJumping()
 	if (BowComponent->OnAim()) return;
 
 	StopJumping();
+}
+
+void ATwilightArcheryCharacter::PauseGame()
+{
+	APlayerController* playerController = GetWorld()->GetFirstPlayerController();
+
+	if (!IsValid(playerController))
+		return;
+
+	if (UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		playerController->SetInputMode(FInputModeGameOnly());
+		playerController->SetShowMouseCursor(false);
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+		return;
+	}
+
+	playerController->SetInputMode(FInputModeGameAndUI());
+	playerController->SetShowMouseCursor(true);
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }

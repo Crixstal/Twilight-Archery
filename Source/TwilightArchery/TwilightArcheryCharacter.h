@@ -94,6 +94,8 @@ private:
 	void OnJump();
 	void OnStopJumping();
 
+	void PauseGame();
+
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
 
