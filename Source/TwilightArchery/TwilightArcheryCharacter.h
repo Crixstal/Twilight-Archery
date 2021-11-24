@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Curves/CurveFloat.h"
 #include "BowComponent.h"
+#include "Camera/CameraShake.h"
 #include "GameFramework/Character.h"
 #include "Components/StaticMeshComponent.h"
 #include "TwilightArcheryCharacter.generated.h"
@@ -36,6 +37,9 @@ public:
 
 
 	// _______________________CAMERA PARAMETERS_____________________________
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SelfParameters\| Camera", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UMatineeCameraShake> ShootShake;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|Rates")
 	float BaseTurnRate;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Camera\|Rates")
@@ -107,6 +111,8 @@ protected:
 	// End of APawn interface
 
 	virtual void BeginPlay() override;
+
+	APlayerController* selfController;
 
 public:
 
