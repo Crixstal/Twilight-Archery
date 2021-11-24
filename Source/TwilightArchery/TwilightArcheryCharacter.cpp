@@ -87,10 +87,12 @@ void ATwilightArcheryCharacter::UpdateCameraBoom()
 
 		float newLengthTarget = FMath::Lerp(baseArmLength, aimArmLength, curveValue);
 		float newOffsetTargetY = FMath::Lerp(baseArmOffset.Y, aimArmOffset.Y, curveValue);
-
+		float newFOV = FMath::Lerp(90.f, 70.f, curveValue);
 
 		CameraBoom->TargetArmLength = FMath::Clamp(newLengthTarget, aimArmLength, baseArmLength);
 		CameraBoom->SocketOffset.Y = FMath::Clamp(newOffsetTargetY, baseArmOffset.Y, aimArmOffset.Y);
+
+		FollowCamera->FieldOfView = FMath::Clamp(newFOV, 70.f, 90.f);
 
 		timerArmCamera -= GetWorld()->GetDeltaSeconds();
 	}
@@ -227,6 +229,7 @@ void ATwilightArcheryCharacter::StopAiming()
 	if (!BowComponent->OnCharge())
 	{
 		OnAimingEnd();
+		UE_LOG(LogTemp, Warning, TEXT("STOOP"));
 		return;
 	}
 
