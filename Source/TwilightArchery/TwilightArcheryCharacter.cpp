@@ -6,10 +6,10 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "DrawDebugHelpers.h"
 #include "Arrow.h"
-#include "GameFramework/SpringArmComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATwilightArcheryCharacter
@@ -51,6 +51,9 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	DodgeCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("DodgeCapsule"));
+	DodgeCapsule->SetupAttachment(GetMesh());
+
 	BowComponent = CreateDefaultSubobject<UBowComponent>("Bow Component");
 }
 
@@ -67,6 +70,9 @@ void ATwilightArcheryCharacter::BeginPlay()
 	ArrowMesh2->SetHiddenInGame(true);
 
 	selfController = Cast<APlayerController>(GetController());
+
+	DodgeCapsule->SetCapsuleHalfHeight(GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight());
+	DodgeCapsule->SetCapsuleRadius(GetCapsuleComponent()->GetUnscaledCapsuleRadius());
 }
 
 void ATwilightArcheryCharacter::Tick(float DeltaTime)
@@ -110,6 +116,8 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ATwilightArcheryCharacter::OnJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ATwilightArcheryCharacter::OnStopJumping);
+
+	PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &ATwilightArcheryCharacter::Dodge);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed,  this, &ATwilightArcheryCharacter::StartSprinting);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATwilightArcheryCharacter::StopSprinting);
@@ -181,6 +189,15 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ATwilightArcheryCharacter::Dodge()
+{
+	if (BowComponent->OnAim()) return;
+
+	bIsDodging = true;
+
+	GetCharacterMovement()->DisableMovement();
 }
 
 void ATwilightArcheryCharacter::StartSprinting()

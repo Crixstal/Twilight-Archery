@@ -24,6 +24,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
+	UPROPERTY(Category = Actor, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		class UCapsuleComponent* DodgeCapsule;
+
 public:
 
 	UPROPERTY(Category = "SelfParameters\|Components", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -79,6 +82,10 @@ public:
 	// _______________________OTHER PARAMETERS_____________________________
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bIsSprinting = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+		bool bIsDodging = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+		bool bIsInvincible = false;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -102,6 +109,8 @@ private:
 
 	void OnJump();
 	void OnStopJumping();
+
+	void Dodge();
 
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
