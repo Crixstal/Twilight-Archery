@@ -46,6 +46,6 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "ArrowHit");
 
-	ProjectileComponent->DestroyComponent();
+	//ProjectileComponent->DestroyComponent();
 }
 

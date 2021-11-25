@@ -37,8 +37,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Components")
 	UBowComponent* BowComponent;
 
-
-
 	// _______________________CAMERA PARAMETERS_____________________________
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Camera", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UMatineeCameraShake> ShootShake;
@@ -77,6 +75,8 @@ public:
 	float sprintWalkSpeed = 550.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
 	float aimWalkSpeed = 300.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
+	float dodgeSpeed = 400.f;
 
 
 	// _______________________OTHER PARAMETERS_____________________________
@@ -92,6 +92,8 @@ public:
 	void OnAimingEnd();
 	UFUNCTION(BlueprintCallable)
 	void DrawArrow();
+	UFUNCTION(BlueprintCallable)
+	void StopDodge();
 
 private:
 
@@ -110,7 +112,7 @@ private:
 	void OnJump();
 	void OnStopJumping();
 
-	void Dodge();
+	void StartDodge();
 
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
@@ -119,12 +121,19 @@ private:
 
 	float timerArmCamera = 0.f;
 
+	FVector lastControlDirection;
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
 	virtual void BeginPlay() override;
+
+	bool CanSprint();
+	bool CanDodge();
+	bool CanJump();
+	bool CanAim();
 
 	APlayerController* selfController;
 
