@@ -334,6 +334,8 @@ void ATwilightArcheryCharacter::PauseGame()
 
 	playerController->SetInputMode(FInputModeGameAndUI());
 	playerController->SetShowMouseCursor(true);
+	StopAiming();
+	StopSprinting();
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
 	pauseEvent.Broadcast();
 }
