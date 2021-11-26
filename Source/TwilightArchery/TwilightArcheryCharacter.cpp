@@ -88,7 +88,7 @@ void ATwilightArcheryCharacter::Tick(float DeltaTime)
 
 	if (bIsDodging)
 	{
-		if (!CanDodge())
+		if (GetCharacterMovement()->IsFalling())
 		{
 			StopDodge();
 			return;
@@ -409,7 +409,7 @@ bool ATwilightArcheryCharacter::CanDodge()
 
 bool ATwilightArcheryCharacter::CanJump()
 {
-	return !(BowComponent->OnAim() || bIsDodging);
+	return !(BowComponent->OnAim() || bIsDodging || Stamina->currentStamina < Stamina->jumpDrain);
 }
 
 bool ATwilightArcheryCharacter::CanAim()
