@@ -34,9 +34,12 @@ public:
 	UBowComponent* BowComponent;
 
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"))
+	class UStaminaComponent* Stamina;
 
 	// _______________________CAMERA PARAMETERS_____________________________
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|Rates")
+	
 	float BaseTurnRate;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Camera\|Rates")
 	float BaseLookUpRate;
@@ -69,7 +72,13 @@ public:
 
 	// _______________________OTHER PARAMETERS_____________________________
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-		bool bIsSprinting = false;
+	bool bIsSprinting = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+	bool bIsAiming = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+	bool bHasShoot = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+	bool bIsDodging = false;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -93,6 +102,8 @@ private:
 
 	void OnJump();
 	void OnStopJumping();
+
+	void PauseGame();
 
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);

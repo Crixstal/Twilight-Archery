@@ -6,10 +6,12 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "DrawDebugHelpers.h"
 #include "Arrow.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "StaminaComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -53,6 +55,7 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	BowComponent = CreateDefaultSubobject<UBowComponent>("Bow Component");
+	Stamina = CreateDefaultSubobject<UStaminaComponent>(TEXT("Stamina"));
 }
 
 void ATwilightArcheryCharacter::BeginPlay()
@@ -115,6 +118,9 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ATwilightArcheryCharacter::StartAiming);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ATwilightArcheryCharacter::StopAiming);
+
+	FInputActionBinding& toggle = PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &ATwilightArcheryCharacter::PauseGame);
+	toggle.bExecuteWhenPaused = true;
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATwilightArcheryCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATwilightArcheryCharacter::MoveRight);
@@ -188,9 +194,12 @@ void ATwilightArcheryCharacter::StartSprinting()
 {
 	if (BowComponent->OnAim()) return;
 
-	bIsSprinting = true;
-
 	GetCharacterMovement()->MaxWalkSpeed = sprintWalkSpeed;
+
+	if (GetVelocity().Size() != 0.f)
+		bIsSprinting = true;
+
+	Stamina->StartSprinting();
 }
 
 void ATwilightArcheryCharacter::StopSprinting()
@@ -200,6 +209,8 @@ void ATwilightArcheryCharacter::StopSprinting()
 	bIsSprinting = false;
 
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+
+	Stamina->StopSprinting();
 }
 
 void ATwilightArcheryCharacter::StartAiming()
@@ -220,6 +231,8 @@ void ATwilightArcheryCharacter::StartAiming()
 
 	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
+
+	Stamina->StartAiming();
 
 	BowComponent->OnStartAiming();
 }
@@ -273,6 +286,10 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 
 	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
+
+	bIsAiming = false;
+
+	Stamina->StopAiming();
 }
 
 void ATwilightArcheryCharacter::DrawArrow()
@@ -288,6 +305,8 @@ void ATwilightArcheryCharacter::OnJump()
 	if (BowComponent->OnAim()) return;
 
 	Jump();
+
+	Stamina->OnJump();
 }
 
 void ATwilightArcheryCharacter::OnStopJumping()
@@ -295,4 +314,27 @@ void ATwilightArcheryCharacter::OnStopJumping()
 	if (BowComponent->OnAim()) return;
 
 	StopJumping();
+
+	Stamina->OnStopJumping();
+}
+
+void ATwilightArcheryCharacter::PauseGame()
+{
+	APlayerController* playerController = GetWorld()->GetFirstPlayerController();
+
+	if (!IsValid(playerController))
+		return;
+
+	if (UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		playerController->SetInputMode(FInputModeGameOnly());
+		playerController->SetShowMouseCursor(false);
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+		return;
+	}
+
+	playerController->SetInputMode(FInputModeGameAndUI());
+	playerController->SetShowMouseCursor(true);
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
