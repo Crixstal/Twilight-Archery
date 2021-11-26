@@ -16,9 +16,12 @@ UBTTask_ChasePlayer::UBTTask_ChasePlayer(FObjectInitializer const& object_initia
 EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* actualEnemy = OwnerComp.GetAIOwner();
-	ABossCharacter* npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
+	if (npc == nullptr)
+		npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
+
 	ATwilightArcheryCharacter* me = Cast<ATwilightArcheryCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	
+
 	actualEnemy->MoveToLocation(npc->target->GetActorLocation(), 1.f, false);
 
 	return EBTNodeResult::Succeeded;

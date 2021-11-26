@@ -10,16 +10,28 @@ ABossCharacter::ABossCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	hitBoxHead = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxHead"));
-	hitBoxHead->SetupAttachment(RootComponent);
+	hitBoxHead->SetupAttachment(GetMesh(), "HeadSocket");
 
-	hitBoxBody = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBody"));
-	hitBoxBody->SetupAttachment(RootComponent);
+	hitBoxBodyBack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBodyBack"));
+	hitBoxBodyBack->SetupAttachment(GetMesh(), "Back");
 
-	hitBoxLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftLeg"));
-	hitBoxLegs->SetupAttachment(RootComponent);
+	hitBoxBodyFront = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBodyFront"));
+	hitBoxBodyFront->SetupAttachment(GetMesh(), "Front");
+
+	hitBoxLeftBackLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftBackLegs"));
+	hitBoxLeftBackLegs->SetupAttachment(GetMesh(), "LeftBackLeg");
+
+	hitBoxLeftFrontLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftFrontLegs"));
+	hitBoxLeftFrontLegs->SetupAttachment(GetMesh(), "LeftFrontLeg");
+
+	hitBoxRightBackLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightBackLegs"));
+	hitBoxRightBackLegs->SetupAttachment(GetMesh(), "RightBackLeg");
+
+	hitBoxRightFrontLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightFrontLegs"));
+	hitBoxRightFrontLegs->SetupAttachment(GetMesh(), "RightFrontLeg");
 
 	hitBoxBasicAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBasicAttack"));
-	hitBoxBasicAttack->SetupAttachment(RootComponent);
+	hitBoxBasicAttack->SetupAttachment(GetMesh(), "R_HandSocket");
 	
 }
 
@@ -29,8 +41,12 @@ void ABossCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	hitBoxHead->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
-	hitBoxBody->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
-	hitBoxLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxBodyBack->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxBodyFront->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxLeftBackLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxLeftFrontLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxRightBackLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxRightFrontLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 
 	world = GetWorld();
 
@@ -94,6 +110,12 @@ void ABossCharacter::BasicAttack()
 	hitBoxBasicAttack->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	isAttacking = true;
 	GetWorldTimerManager().SetTimer(TimerHandleAtt, this, &ABossCharacter::Attacking, 1.f, true);
+	FVector FacingVector = {target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0};
+	FRotator FacingRotator = FacingVector.Rotation();
+	SetActorRotation(FacingRotator, ETeleportType::None);
+
+	/*GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, FString::Printf(TEXT("HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")));*/
+
 }
 
 void ABossCharacter::StopBasicAttack()

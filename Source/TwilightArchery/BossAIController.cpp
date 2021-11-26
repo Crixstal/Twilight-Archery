@@ -2,6 +2,7 @@
 
 
 #include "BossAIController.h"
+#include "BossCharacter.h"
 
 ABossAIController::ABossAIController(const FObjectInitializer& ObjectInitializer) : AAIController(ObjectInitializer)
 {
@@ -22,5 +23,7 @@ void ABossAIController::BeginPlay()
 	Super::BeginPlay();
 	RunBehaviorTree(behaviorTree);
 	behaviorComp->StartTree(*behaviorTree, EBTExecutionMode::Looped);
+	ABossCharacter* Boss = Cast<ABossCharacter>(GetPawn());
+	blackboard->SetValueAsObject(TEXT("SelfActor"), Boss);
 }
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "TwilightArcheryCharacter.h"
 #include "BossCharacter.generated.h"
 
@@ -25,14 +26,26 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components HeadBox")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components HeadBox")
 		class UBoxComponent* hitBoxHead;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components BodyBox")
-		class UBoxComponent* hitBoxBody;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components BodyBoxBack")
+		class UBoxComponent* hitBoxBodyBack; 
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components BodyBoxFront")
+		class UBoxComponent* hitBoxBodyFront;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components LegBox")
-		class UBoxComponent* hitBoxLegs;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LegBox")
+		class UBoxComponent* hitBoxLeftBackLegs;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LegBox")
+		class UBoxComponent* hitBoxRightBackLegs;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LegBox")
+		class UBoxComponent* hitBoxLeftFrontLegs;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LegBox")
+		class UBoxComponent* hitBoxRightFrontLegs;
 
 	/*UPROPERTY(VisibleAnywhere, Category = "lifeEnemy")
 		int life = 200;*/
@@ -60,7 +73,7 @@ public:
 	void Attacking();
 
 	
-	UPROPERTY(VisibleAnywhere, Category = "Components BasicAttack")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components BasicAttack")
 		class UBoxComponent* hitBoxBasicAttack;
 
 	void BasicAttack();
