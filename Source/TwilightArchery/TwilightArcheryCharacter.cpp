@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "TwilightArcheryCharacter.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
@@ -337,4 +335,5 @@ void ATwilightArcheryCharacter::PauseGame()
 	playerController->SetInputMode(FInputModeGameAndUI());
 	playerController->SetShowMouseCursor(true);
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	pauseEvent.Broadcast();
 }
