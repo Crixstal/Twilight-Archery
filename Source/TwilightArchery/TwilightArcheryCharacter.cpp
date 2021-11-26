@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "DrawDebugHelpers.h"
+#include "LifeComponent.h"
 #include "Arrow.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "StaminaComponent.h"
@@ -57,7 +58,7 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 
 	BowComponent = CreateDefaultSubobject<UBowComponent>("Bow Component");
 	Stamina = CreateDefaultSubobject<UStaminaComponent>(TEXT("Stamina"));
-
+	Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
 }
 
 void ATwilightArcheryCharacter::BeginPlay()

@@ -40,6 +40,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Components")
 	UBowComponent* BowComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Components")
+	class ULifeComponent* Life;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"))
 	class UStaminaComponent* Stamina;
