@@ -17,6 +17,8 @@ public:
 
 	class ATwilightArcheryCharacter* player;
 
+	void InitPlayer(ATwilightArcheryCharacter* inPlayer);
+
 	FTimerHandle regenTimer;
 	FTimerHandle drainTimer;
 	float regenDelay = 2.f;

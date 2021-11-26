@@ -15,8 +15,13 @@ UStaminaComponent::UStaminaComponent()
 void UStaminaComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-	player = Cast<ATwilightArcheryCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+void UStaminaComponent::InitPlayer(ATwilightArcheryCharacter* inPlayer)
+{
+	if (inPlayer == nullptr) return;
+
+	player = inPlayer;
 }
 
 void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -33,7 +38,7 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	if (player->GetVelocity().Size() == 0.f)
 		player->bIsSprinting = false;
 
-	if (player->bIsAiming)
+	if (player->BowComponent->OnAim())
 	{
 		bShouldDrain = true;
 		Drain(aimDrain);
@@ -80,17 +85,15 @@ void UStaminaComponent::StopSprinting()
 
 void UStaminaComponent::StartDodging()
 {
-	player->bIsDodging = true;
 	bShouldDrain = true;
 	InstantDrain(dodgeDrain);
 }
 
 void UStaminaComponent::StopDodging()
 {
-	player->bIsDodging = false;
 	bShouldDrain = false;
-	player->GetWorldTimerManager().SetTimer(regenTimer, this, &UStaminaComponent::Regen, deltaTime, true, regenDelay);
-	Regen();
+	if (!player->bIsDodging)
+		player->GetWorldTimerManager().SetTimer(regenTimer, this, &UStaminaComponent::Regen, deltaTime, true, regenDelay);
 }
 
 void UStaminaComponent::Regen()
@@ -136,6 +139,7 @@ void UStaminaComponent::InstantDrain(float drainPercentage)
 			player->bIsSprinting = false;
 			player->GetCharacterMovement()->MaxWalkSpeed = player->baseWalkSpeed;
 			player->StopJumping();
+			
 		}
 	}
 }

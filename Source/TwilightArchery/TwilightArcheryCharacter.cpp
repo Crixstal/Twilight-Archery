@@ -59,6 +59,7 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 
 	BowComponent = CreateDefaultSubobject<UBowComponent>("Bow Component");
 	Stamina = CreateDefaultSubobject<UStaminaComponent>(TEXT("Stamina"));
+
 }
 
 void ATwilightArcheryCharacter::BeginPlay()
@@ -77,6 +78,8 @@ void ATwilightArcheryCharacter::BeginPlay()
 
 	DodgeCapsule->SetCapsuleHalfHeight(GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight());
 	DodgeCapsule->SetCapsuleRadius(GetCapsuleComponent()->GetUnscaledCapsuleRadius());
+
+	Stamina->InitPlayer(this);
 }
 
 void ATwilightArcheryCharacter::Tick(float DeltaTime)
@@ -222,6 +225,8 @@ void ATwilightArcheryCharacter::StartDodge()
 	GetCharacterMovement()->MaxWalkSpeed = dodgeSpeed;
 	 
 	lastControlDirection = GetActorForwardVector();
+
+	Stamina->StartDodging();
 }
 
 void ATwilightArcheryCharacter::StopDodge()
@@ -230,6 +235,8 @@ void ATwilightArcheryCharacter::StopDodge()
 	SetInvincible(false);
 
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+
+	Stamina->StopDodging();
 }
 
 void ATwilightArcheryCharacter::StartSprinting()
@@ -332,8 +339,6 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
 
-	bIsAiming = false;
-
 	Stamina->StopAiming();
 }
 
@@ -398,7 +403,7 @@ bool ATwilightArcheryCharacter::CanSprint()
 
 bool ATwilightArcheryCharacter::CanDodge()
 {
-	return !(GetCharacterMovement()->IsFalling() || BowComponent->OnAim());
+	return !(GetCharacterMovement()->IsFalling() || BowComponent->OnAim() || Stamina->currentStamina < Stamina->dodgeDrain || bIsDodging);
 }
 
 bool ATwilightArcheryCharacter::CanJump()
