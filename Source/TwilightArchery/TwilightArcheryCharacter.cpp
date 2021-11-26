@@ -349,7 +349,7 @@ void ATwilightArcheryCharacter::DrawArrow()
 
 void ATwilightArcheryCharacter::OnJump()
 {
-	if (BowComponent->OnAim()) return;
+	if (!CanJump()) return;
 
 	Jump();
 
@@ -404,7 +404,7 @@ bool ATwilightArcheryCharacter::CanSprint()
 
 bool ATwilightArcheryCharacter::CanDodge()
 {
-	return !(GetCharacterMovement()->IsFalling() || BowComponent->OnAim() || Stamina->currentStamina < Stamina->dodgeDrain || bIsDodging);
+	return !(GetCharacterMovement()->IsFalling() || BowComponent->OnAim() || bIsDodging || Stamina->currentStamina < Stamina->dodgeDrain);
 }
 
 bool ATwilightArcheryCharacter::CanJump()
@@ -414,5 +414,5 @@ bool ATwilightArcheryCharacter::CanJump()
 
 bool ATwilightArcheryCharacter::CanAim()
 {
-	return BowComponent->CanShoot() && !bIsDodging;
+	return BowComponent->CanShoot() && !bIsDodging && Stamina->currentStamina >= Stamina->aimDrain;
 }
