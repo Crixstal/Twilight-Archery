@@ -176,7 +176,7 @@ void ATwilightArcheryCharacter::LookUpAtRate(float Rate)
 
 void ATwilightArcheryCharacter::MoveForward(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.0f))
+	if ((Controller != nullptr) && (Value != 0.0f) && !bIsDodging)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -190,7 +190,7 @@ void ATwilightArcheryCharacter::MoveForward(float Value)
 
 void ATwilightArcheryCharacter::MoveRight(float Value)
 {
-	if ( (Controller != nullptr) && (Value != 0.0f) )
+	if ( (Controller != nullptr) && (Value != 0.0f) && !bIsDodging)
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -208,6 +208,7 @@ void ATwilightArcheryCharacter::StartDodge()
 	if (!CanDodge()) return;
 
 	bIsDodging = true;
+	SetInvincible(true);
 
 	GetCharacterMovement()->MaxWalkSpeed = dodgeSpeed;
 	 
@@ -217,7 +218,9 @@ void ATwilightArcheryCharacter::StartDodge()
 void ATwilightArcheryCharacter::StopDodge()
 {
 	bIsDodging = false;
-	//GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	SetInvincible(false);
+
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 }
 
 void ATwilightArcheryCharacter::StartSprinting()
@@ -333,6 +336,14 @@ void ATwilightArcheryCharacter::OnStopJumping()
 	if (BowComponent->OnAim()) return;
 
 	StopJumping();
+}
+
+void ATwilightArcheryCharacter::SetInvincible(bool value)
+{
+	bIsInvincible = value;
+
+	if (!bIsInvincible)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Not invincible");
 }
 
 bool ATwilightArcheryCharacter::CanSprint()

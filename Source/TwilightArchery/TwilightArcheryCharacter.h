@@ -94,6 +94,8 @@ public:
 	void DrawArrow();
 	UFUNCTION(BlueprintCallable)
 	void StopDodge();
+	UFUNCTION(BlueprintCallable)
+	void SetInvincible(bool value);
 
 private:
 
