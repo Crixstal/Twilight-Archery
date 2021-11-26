@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Curves/CurveFloat.h"
 #include "BowComponent.h"
+#include "Camera/CameraShake.h"
 #include "GameFramework/Character.h"
 #include "Components/StaticMeshComponent.h"
 #include "TwilightArcheryCharacter.generated.h"
@@ -23,6 +24,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
+	UPROPERTY(Category = Actor, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		class UCapsuleComponent* DodgeCapsule;
+
 public:
 
 	UPROPERTY(Category = "SelfParameters\|Components", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -38,11 +42,19 @@ public:
 	class UStaminaComponent* Stamina;
 
 	// _______________________CAMERA PARAMETERS_____________________________
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Camera", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UMatineeCameraShake> ShootShake;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|Rates")
 	
 	float BaseTurnRate;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Camera\|Rates")
 	float BaseLookUpRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|FOV")
+	float baseCamFOV = 90.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|FOV")
+	float aimCamFOV = 70.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Camera\|SpringParameters\|Curves")
 	UCurveFloat* armCurve;
@@ -68,23 +80,27 @@ public:
 	float sprintWalkSpeed = 550.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
 	float aimWalkSpeed = 300.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
+	float dodgeSpeed = 400.f;
 
 
 	// _______________________OTHER PARAMETERS_____________________________
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bIsSprinting = false;
+		bool bIsSprinting = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bIsAiming = false;
+		bool bIsDodging = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bHasShoot = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-	bool bIsDodging = false;
+		bool bIsInvincible = false;
 
 
 	UFUNCTION(BlueprintCallable)
 	void OnAimingEnd();
 	UFUNCTION(BlueprintCallable)
 	void DrawArrow();
+	UFUNCTION(BlueprintCallable)
+	void StopDodge();
+	UFUNCTION(BlueprintCallable)
+	void SetInvincible(bool value);
 
 private:
 
@@ -103,6 +119,7 @@ private:
 	void OnJump();
 	void OnStopJumping();
 
+	void StartDodge();
 	void PauseGame();
 
 	void TurnAtRate(float Rate);
@@ -112,12 +129,21 @@ private:
 
 	float timerArmCamera = 0.f;
 
+	FVector lastControlDirection;
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
 	virtual void BeginPlay() override;
+
+	bool CanSprint();
+	bool CanDodge();
+	bool CanJump();
+	bool CanAim();
+
+	APlayerController* selfController;
 
 public:
 

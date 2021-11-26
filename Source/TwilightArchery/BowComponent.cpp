@@ -31,7 +31,7 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	{
 		if (timerCharge == maxChargeTime) return;
 
-		//UE_LOG(LogTemp, Warning, TEXT("AimTime = %f"), onAimingTimer);
+		//UE_LOG(LogTemp, Warning, TEXT("CHARGING"));
 
 		timerCharge += GetWorld()->GetDeltaSeconds();
 		timerCharge = FMath::Clamp(timerCharge, 0.f, maxChargeTime);
@@ -41,6 +41,7 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 void UBowComponent::OnStartAiming()
 {
 	bIsAiming = true;
+	bIsCharging = false;
 }
 
 void UBowComponent::OnEndAiming()
@@ -51,8 +52,10 @@ void UBowComponent::OnEndAiming()
 
 void UBowComponent::OnDrawArrow()
 {
-	bIsCharging = true;
 	timerCharge = 0.f;
+	bIsCharging = true;
+
+	UE_LOG(LogTemp, Warning, TEXT("timer 0.f"));
 }
 
 float map(float value, float istart, float istop, float ostart, float ostop) 
@@ -67,6 +70,8 @@ void UBowComponent::Shoot(FVector ShootDirection, FTransform ShootTransform)
 
 	float mult = map(timerCharge, 0.f, maxChargeTime, minChargeVelocityMultiplier, maxChargeVelocityMultiplier);
 	FVector arrowVelocity = ShootDirection * mult;
+
+	UE_LOG(LogTemp, Warning, TEXT("Mult = %f"), timerCharge);
 
 	AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ShootTransform);
 	arrow->Initialize(arrowVelocity);
