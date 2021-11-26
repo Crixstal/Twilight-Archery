@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,6 +8,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "TwilightArcheryCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPauseEvent);
+
 UCLASS(config=Game)
 class ATwilightArcheryCharacter : public ACharacter
 {
@@ -17,6 +17,9 @@ class ATwilightArcheryCharacter : public ACharacter
 
 public:
 	ATwilightArcheryCharacter();
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegate")
+	FPauseEvent pauseEvent;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
