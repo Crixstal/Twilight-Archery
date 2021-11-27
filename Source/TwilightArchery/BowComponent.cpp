@@ -42,6 +42,14 @@ void UBowComponent::OnStartAiming()
 {
 	bIsAiming = true;
 	bIsCharging = false;
+
+	if (!bHasToDrawArrow)
+		OnDrawArrow();
+}
+
+void UBowComponent::CancelAim()
+{
+	bIsCharging = false;
 }
 
 void UBowComponent::OnEndAiming()
@@ -54,8 +62,7 @@ void UBowComponent::OnDrawArrow()
 {
 	timerCharge = 0.f;
 	bIsCharging = true;
-
-	UE_LOG(LogTemp, Warning, TEXT("timer 0.f"));
+	bHasToDrawArrow = false;
 }
 
 float map(float value, float istart, float istop, float ostart, float ostop) 
@@ -67,11 +74,12 @@ void UBowComponent::Shoot(FVector ShootDirection, FTransform ShootTransform)
 {
 	bHasShoot = true;
 	bIsCharging = false;
+	bHasToDrawArrow = true;
 
 	float mult = map(timerCharge, 0.f, maxChargeTime, minChargeVelocityMultiplier, maxChargeVelocityMultiplier);
 	FVector arrowVelocity = ShootDirection * mult;
 
-	UE_LOG(LogTemp, Warning, TEXT("Mult = %f"), timerCharge);
+	//UE_LOG(LogTemp, Warning, TEXT("Mult = %f"), timerCharge);
 
 	AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ShootTransform);
 	arrow->Initialize(arrowVelocity);

@@ -86,6 +86,8 @@ public:
 		bool bIsDodging = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bIsInvincible = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+		bool bShouldAim = false;
 
 
 	UFUNCTION(BlueprintCallable)

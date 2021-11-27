@@ -207,12 +207,33 @@ void ATwilightArcheryCharacter::StartDodge()
 {
 	if (!CanDodge()) return;
 
+	lastControlDirection = GetActorForwardVector();
+
+	if (BowComponent->OnAim() && !BowComponent->HasShoot())
+	{
+		bShouldAim = true;
+
+		OnAimingEnd();
+		BowComponent->CancelAim();
+
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		lastControlDirection = Direction;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, "STAAAAAAAART");
+
+	UE_LOG(LogTemp, Warning, TEXT("Dir : %f | %f | %f"), lastControlDirection.X, lastControlDirection.Y, lastControlDirection.Z);
+
+
 	bIsDodging = true;
 	SetInvincible(true);
 
 	GetCharacterMovement()->MaxWalkSpeed = dodgeSpeed;
-	 
-	lastControlDirection = GetActorForwardVector();
 }
 
 void ATwilightArcheryCharacter::StopDodge()
@@ -221,6 +242,15 @@ void ATwilightArcheryCharacter::StopDodge()
 	SetInvincible(false);
 
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, "STOOOOOOOOOP");
+
+	if (bShouldAim)
+	{
+		bShouldAim = false;
+		if (!GetCharacterMovement()->IsFalling())
+			StartAiming();
+	}
 }
 
 void ATwilightArcheryCharacter::StartSprinting()
@@ -245,6 +275,12 @@ void ATwilightArcheryCharacter::StartAiming()
 {
 	if (!CanAim()) return;
 
+	if (bIsDodging)
+	{
+		bShouldAim = true;
+		return;
+	}
+
 	if (bIsSprinting)
 		StopSprinting();
 
@@ -268,8 +304,9 @@ void ATwilightArcheryCharacter::StopAiming()
 	// Check if the bow is charged
 	if (!BowComponent->OnCharge())
 	{
+		bShouldAim = false;
 		OnAimingEnd();
-		UE_LOG(LogTemp, Warning, TEXT("STOOP"));
+
 		return;
 	}
 
@@ -299,7 +336,7 @@ void ATwilightArcheryCharacter::StopAiming()
 
 void ATwilightArcheryCharacter::OnAimingEnd()
 {
-	// Check if currently aiming
+	// Check if currently aiming or dodging
 	if (!BowComponent->OnAim()) return;
 
 	BowComponent->OnEndAiming();
@@ -353,7 +390,7 @@ bool ATwilightArcheryCharacter::CanSprint()
 
 bool ATwilightArcheryCharacter::CanDodge()
 {
-	return !(GetCharacterMovement()->IsFalling() || BowComponent->OnAim());
+	return !(GetCharacterMovement()->IsFalling());
 }
 
 bool ATwilightArcheryCharacter::CanJump()
@@ -363,5 +400,5 @@ bool ATwilightArcheryCharacter::CanJump()
 
 bool ATwilightArcheryCharacter::CanAim()
 {
-	return BowComponent->CanShoot() && !bIsDodging;
+	return BowComponent->CanShoot();
 }

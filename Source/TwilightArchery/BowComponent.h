@@ -27,6 +27,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Self\|Arrow")
 		int maxArrows = 5;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bHasToDrawArrow = true;
+
 protected:
 
 	bool bIsCharging = false;
@@ -42,6 +45,7 @@ public:
 
 	void OnStartAiming();
 	void OnEndAiming();
+	void CancelAim();
 	void Reload();
 	void OnDrawArrow();
 	void Shoot(FVector ShootDirection, FTransform ShootTransform);
