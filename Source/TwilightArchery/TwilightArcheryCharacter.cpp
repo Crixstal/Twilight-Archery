@@ -11,6 +11,8 @@
 #include "DrawDebugHelpers.h"
 #include "Arrow.h"
 
+#define ARROW_SOCKET FName("ArrowSocket")
+
 //////////////////////////////////////////////////////////////////////////
 // ATwilightArcheryCharacter
 
@@ -38,8 +40,11 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	BowMesh = CreateOptionalDefaultSubobject<USkeletalMeshComponent>(TEXT("BowMesh"));
 	BowMesh->SetupAttachment(GetMesh(), FName("BowSocket"));
 
-	ArrowMesh2 = CreateOptionalDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowMesh"));
-	ArrowMesh2->SetupAttachment(BowMesh, FName("ArrowSocket"));
+	ArrowHandMesh = CreateOptionalDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowHandMesh"));
+	ArrowHandMesh->SetupAttachment(GetMesh(), FName("ArrowSocket"));
+
+	ArrowBowMesh = CreateOptionalDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowBowMesh"));
+	ArrowBowMesh->SetupAttachment(BowMesh, FName("ArrowSocket"));
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -67,7 +72,8 @@ void ATwilightArcheryCharacter::BeginPlay()
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
 	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
 
-	ArrowMesh2->SetHiddenInGame(true);
+	ArrowHandMesh->SetHiddenInGame(true);
+	ArrowBowMesh->SetHiddenInGame(true);
 
 	selfController = Cast<APlayerController>(GetController());
 
@@ -323,12 +329,12 @@ void ATwilightArcheryCharacter::StopAiming()
 		aimHitLocation = end;
 
 	// Shoot with bow
-	FVector shootDirection = aimHitLocation - ArrowMesh2->GetComponentLocation();
+	FVector shootDirection = aimHitLocation - ArrowBowMesh->GetComponentLocation();
 	shootDirection.Normalize();
-	BowComponent->Shoot(shootDirection, ArrowMesh2->GetComponentTransform());
+	BowComponent->Shoot(shootDirection, ArrowBowMesh->GetComponentTransform());
 
 	// Hide arrow mesh on bow socket
-	ArrowMesh2->SetHiddenInGame(true);
+	ArrowBowMesh->SetHiddenInGame(true);
 
 	if (selfController && ShootShake)
 		selfController->ClientStartCameraShake(ShootShake);
@@ -350,6 +356,8 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 		bUseControllerRotationYaw = false;
 	}
 
+	ArrowHandMesh->SetHiddenInGame(true);
+
 	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
 }
@@ -357,8 +365,22 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 void ATwilightArcheryCharacter::DrawArrow()
 {
 	// On Ready to shoot
-	ArrowMesh2->SetHiddenInGame(false);
-	BowComponent->OnDrawArrow();
+	//ArrowMesh2->SetHiddenInGame(false);
+	//BowComponent->StartCharging();
+}
+
+void ATwilightArcheryCharacter::TakeArrowBack()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Take Back");
+	ArrowHandMesh->SetHiddenInGame(false);
+}
+
+void ATwilightArcheryCharacter::PlaceArrowOnBow()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Place Bow");
+	ArrowHandMesh->SetHiddenInGame(true);
+	ArrowBowMesh->SetHiddenInGame(false);
+	BowComponent->StartCharging();
 }
 
 void ATwilightArcheryCharacter::OnJump()

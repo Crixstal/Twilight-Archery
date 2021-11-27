@@ -31,8 +31,11 @@ public:
 
 	UPROPERTY(Category = "SelfParameters\|Components", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* BowMesh;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* ArrowMesh2;
+	UStaticMeshComponent* ArrowHandMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* ArrowBowMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Components")
 	UBowComponent* BowComponent;
@@ -98,6 +101,10 @@ public:
 	void StopDodge();
 	UFUNCTION(BlueprintCallable)
 	void SetInvincible(bool value);
+	UFUNCTION(BlueprintCallable)
+	void TakeArrowBack();
+	UFUNCTION(BlueprintCallable)
+	void PlaceArrowOnBow();
 
 private:
 

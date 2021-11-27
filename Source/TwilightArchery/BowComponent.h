@@ -29,13 +29,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
 		bool bHasToDrawArrow = true;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bCanShoot = true;
 
 protected:
 
 	bool bIsCharging = false;
 	bool bIsAiming = false;
 	bool bHasShoot = false;
-	bool bCanShoot = true;
+	bool bNeedArrow = false;
 
 	float timerCharge = 0.f;
 
@@ -47,7 +49,7 @@ public:
 	void OnEndAiming();
 	void CancelAim();
 	void Reload();
-	void OnDrawArrow();
+	void StartCharging();
 	void Shoot(FVector ShootDirection, FTransform ShootTransform);
 
 protected:
