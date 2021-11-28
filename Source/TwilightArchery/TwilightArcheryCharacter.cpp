@@ -182,31 +182,43 @@ void ATwilightArcheryCharacter::LookUpAtRate(float Rate)
 
 void ATwilightArcheryCharacter::MoveForward(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.0f) && !bIsDodging)
+	if (Controller == nullptr) return;
+
+	FVector Direction;
+	if (Value != 0.0f && !bIsDodging)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
 	}
+
+	forwardInputDir = Direction * Value;
 }
 
 void ATwilightArcheryCharacter::MoveRight(float Value)
 {
-	if ( (Controller != nullptr) && (Value != 0.0f) && !bIsDodging)
+	if (Controller == nullptr) return;
+
+	FVector Direction;
+	if ( Value != 0.0f && !bIsDodging)
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 	
 		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+
+		UE_LOG(LogTemp, Warning, TEXT("Direction : %f | %f | %f"), Direction.X, Direction.Y, Direction.Z);
 	}
+
+	rightInputDir = Direction * Value;
 }
 
 void ATwilightArcheryCharacter::StartDodge()
@@ -222,19 +234,8 @@ void ATwilightArcheryCharacter::StartDodge()
 		OnAimingEnd();
 		BowComponent->CancelAim();
 
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		lastControlDirection = Direction;
+		SetLastControlDirection();
 	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, "STAAAAAAAART");
-
-	UE_LOG(LogTemp, Warning, TEXT("Dir : %f | %f | %f"), lastControlDirection.X, lastControlDirection.Y, lastControlDirection.Z);
-
 
 	bIsDodging = true;
 	SetInvincible(true);
@@ -248,8 +249,6 @@ void ATwilightArcheryCharacter::StopDodge()
 	SetInvincible(false);
 
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, "STOOOOOOOOOP");
 
 	if (bShouldAim)
 	{
@@ -403,6 +402,21 @@ void ATwilightArcheryCharacter::SetInvincible(bool value)
 
 	if (!bIsInvincible)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Not invincible");
+}
+
+void ATwilightArcheryCharacter::SetLastControlDirection()
+{
+	lastControlDirection = rightInputDir + forwardInputDir;
+	lastControlDirection.Normalize();
+
+	if (lastControlDirection == FVector::ZeroVector)
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		lastControlDirection = - FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	}
 }
 
 bool ATwilightArcheryCharacter::CanSprint()

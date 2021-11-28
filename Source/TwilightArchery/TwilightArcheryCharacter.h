@@ -130,9 +130,14 @@ private:
 
 	void UpdateCameraBoom();
 
+	void SetLastControlDirection();
+
 	float timerArmCamera = 0.f;
 
+	FVector rightInputDir = FVector::ZeroVector;
+	FVector forwardInputDir = FVector::ZeroVector;
 	FVector lastControlDirection;
+	//FVector inputDirection = FVector::ZeroVector;
 
 protected:
 	// APawn interface
