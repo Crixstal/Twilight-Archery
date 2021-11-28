@@ -332,6 +332,8 @@ void ATwilightArcheryCharacter::StopAiming()
 	shootDirection.Normalize();
 	BowComponent->Shoot(shootDirection, ArrowBowMesh->GetComponentTransform());
 
+	//shootFX->Activate(true);
+
 	// Hide arrow mesh on bow socket
 	ArrowBowMesh->SetHiddenInGame(true);
 

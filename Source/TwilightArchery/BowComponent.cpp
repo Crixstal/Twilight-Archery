@@ -31,8 +31,6 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	{
 		if (timerCharge == maxChargeTime) return;
 
-		//UE_LOG(LogTemp, Warning, TEXT("CHARGING %f"), timerCharge);
-
 		timerCharge += GetWorld()->GetDeltaSeconds();
 		timerCharge = FMath::Clamp(timerCharge, 0.f, maxChargeTime);
 	}
@@ -117,4 +115,9 @@ bool UBowComponent::HasShoot()
 bool UBowComponent::CanShoot()
 {
 	return bCanShoot && !bNeedArrow;
+}
+
+float UBowComponent::GetCurrentChargeTime()
+{
+	return timerCharge;
 }
