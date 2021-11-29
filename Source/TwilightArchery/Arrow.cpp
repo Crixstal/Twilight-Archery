@@ -38,8 +38,8 @@ void AArrow::Tick(float DeltaTime)
 void AArrow::Initialize(FVector velocity)
 {
 	ProjectileComponent->Velocity = velocity;
-
 	ProjectileComponent->bRotationFollowsVelocity = true;
+	ProjectileComponent->ProjectileGravityScale = 0.6;
 }
 
 void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
