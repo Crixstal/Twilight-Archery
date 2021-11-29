@@ -13,6 +13,8 @@
 #include "StaminaComponent.h"
 #include "Kismet/GameplayStatics.h"
 
+#define ARROW_SOCKET FName("ArrowSocket")
+
 //////////////////////////////////////////////////////////////////////////
 // ATwilightArcheryCharacter
 
@@ -40,8 +42,11 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	BowMesh = CreateOptionalDefaultSubobject<USkeletalMeshComponent>(TEXT("BowMesh"));
 	BowMesh->SetupAttachment(GetMesh(), FName("BowSocket"));
 
-	ArrowMesh2 = CreateOptionalDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowMesh"));
-	ArrowMesh2->SetupAttachment(BowMesh, FName("ArrowSocket"));
+	ArrowHandMesh = CreateOptionalDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowHandMesh"));
+	ArrowHandMesh->SetupAttachment(GetMesh(), FName("ArrowSocket"));
+
+	ArrowBowMesh = CreateOptionalDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowBowMesh"));
+	ArrowBowMesh->SetupAttachment(BowMesh, FName("ArrowSocket"));
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -71,7 +76,8 @@ void ATwilightArcheryCharacter::BeginPlay()
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
 	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
 
-	ArrowMesh2->SetHiddenInGame(true);
+	ArrowHandMesh->SetHiddenInGame(true);
+	ArrowBowMesh->SetHiddenInGame(true);
 
 	selfController = Cast<APlayerController>(GetController());
 
@@ -190,43 +196,65 @@ void ATwilightArcheryCharacter::LookUpAtRate(float Rate)
 
 void ATwilightArcheryCharacter::MoveForward(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.0f) && !bIsDodging)
+	if (Controller == nullptr) return;
+
+	FVector Direction;
+	if (Value != 0.0f && !bIsDodging)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
 	}
+
+	forwardInputDir = Direction * Value;
 }
 
 void ATwilightArcheryCharacter::MoveRight(float Value)
 {
-	if ( (Controller != nullptr) && (Value != 0.0f) && !bIsDodging)
+	if (Controller == nullptr) return;
+
+	FVector Direction;
+	if ( Value != 0.0f && !bIsDodging)
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 	
 		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+
+		UE_LOG(LogTemp, Warning, TEXT("Direction : %f | %f | %f"), Direction.X, Direction.Y, Direction.Z);
 	}
+
+	rightInputDir = Direction * Value;
 }
 
 void ATwilightArcheryCharacter::StartDodge()
 {
 	if (!CanDodge()) return;
 
+	lastControlDirection = GetActorForwardVector();
+
+	if (BowComponent->OnAim() && !BowComponent->HasShoot())
+	{
+		bShouldAim = true;
+
+		OnAimingEnd();
+		BowComponent->CancelAim();
+
+		SetLastControlDirection();
+	}
+
 	bIsDodging = true;
 	SetInvincible(true);
 
 	GetCharacterMovement()->MaxWalkSpeed = dodgeSpeed;
-	 
-	lastControlDirection = GetActorForwardVector();
 
 	Stamina->StartDodging();
 }
@@ -238,6 +266,12 @@ void ATwilightArcheryCharacter::StopDodge()
 
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 
+	if (bShouldAim)
+	{
+		bShouldAim = false;
+		if (!GetCharacterMovement()->IsFalling())
+			StartAiming();
+	}
 	Stamina->StopDodging();
 }
 
@@ -268,6 +302,12 @@ void ATwilightArcheryCharacter::StartAiming()
 {
 	if (!CanAim()) return;
 
+	if (bIsDodging)
+	{
+		bShouldAim = true;
+		return;
+	}
+
 	if (bIsSprinting)
 		StopSprinting();
 
@@ -293,8 +333,9 @@ void ATwilightArcheryCharacter::StopAiming()
 	// Check if the bow is charged
 	if (!BowComponent->OnCharge())
 	{
+		bShouldAim = false;
 		OnAimingEnd();
-		UE_LOG(LogTemp, Warning, TEXT("STOOP"));
+
 		return;
 	}
 
@@ -311,12 +352,14 @@ void ATwilightArcheryCharacter::StopAiming()
 		aimHitLocation = end;
 
 	// Shoot with bow
-	FVector shootDirection = aimHitLocation - ArrowMesh2->GetComponentLocation();
+	FVector shootDirection = aimHitLocation - ArrowBowMesh->GetComponentLocation();
 	shootDirection.Normalize();
-	BowComponent->Shoot(shootDirection, ArrowMesh2->GetComponentTransform());
+	BowComponent->Shoot(shootDirection, ArrowBowMesh->GetComponentTransform());
+
+	//shootFX->Activate(true);
 
 	// Hide arrow mesh on bow socket
-	ArrowMesh2->SetHiddenInGame(true);
+	ArrowBowMesh->SetHiddenInGame(true);
 
 	if (selfController && ShootShake)
 		selfController->ClientStartCameraShake(ShootShake);
@@ -324,7 +367,7 @@ void ATwilightArcheryCharacter::StopAiming()
 
 void ATwilightArcheryCharacter::OnAimingEnd()
 {
-	// Check if currently aiming
+	// Check if currently aiming or dodging
 	if (!BowComponent->OnAim()) return;
 
 	BowComponent->OnEndAiming();
@@ -338,6 +381,8 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 		bUseControllerRotationYaw = false;
 	}
 
+	ArrowHandMesh->SetHiddenInGame(true);
+
 	// Init timer lerp camera boom
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
 
@@ -347,8 +392,22 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 void ATwilightArcheryCharacter::DrawArrow()
 {
 	// On Ready to shoot
-	ArrowMesh2->SetHiddenInGame(false);
-	BowComponent->OnDrawArrow();
+	//ArrowMesh2->SetHiddenInGame(false);
+	//BowComponent->StartCharging();
+}
+
+void ATwilightArcheryCharacter::TakeArrowBack()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Take Back");
+	ArrowHandMesh->SetHiddenInGame(false);
+}
+
+void ATwilightArcheryCharacter::PlaceArrowOnBow()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Place Bow");
+	ArrowHandMesh->SetHiddenInGame(true);
+	ArrowBowMesh->SetHiddenInGame(false);
+	BowComponent->StartCharging();
 }
 
 void ATwilightArcheryCharacter::OnJump()
@@ -401,6 +460,21 @@ void ATwilightArcheryCharacter::SetInvincible(bool value)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Not invincible");
 }
 
+void ATwilightArcheryCharacter::SetLastControlDirection()
+{
+	lastControlDirection = rightInputDir + forwardInputDir;
+	lastControlDirection.Normalize();
+
+	if (lastControlDirection == FVector::ZeroVector)
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		lastControlDirection = - FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	}
+}
+
 bool ATwilightArcheryCharacter::CanSprint()
 {
 	return !(GetCharacterMovement()->IsFalling() || BowComponent->OnAim() || bIsDodging);
@@ -408,7 +482,7 @@ bool ATwilightArcheryCharacter::CanSprint()
 
 bool ATwilightArcheryCharacter::CanDodge()
 {
-	return !(GetCharacterMovement()->IsFalling() || BowComponent->OnAim() || Stamina->currentStamina < Stamina->dodgeDrain || bIsDodging);
+	return !(GetCharacterMovement()->IsFalling());
 }
 
 bool ATwilightArcheryCharacter::CanJump()
@@ -418,7 +492,7 @@ bool ATwilightArcheryCharacter::CanJump()
 
 bool ATwilightArcheryCharacter::CanAim()
 {
-	return BowComponent->CanShoot() && !bIsDodging;
+	return BowComponent->CanShoot();
 }
 
 void ATwilightArcheryCharacter::DebugLifeDown()
