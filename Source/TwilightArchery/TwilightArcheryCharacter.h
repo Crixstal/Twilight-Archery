@@ -30,6 +30,8 @@ private:
 	UPROPERTY(Category = Actor, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		class UCapsuleComponent* DodgeCapsule;
 
+	void DebugLifeDown();
+	void DebugLifeUp();
 public:
 
 	UPROPERTY(Category = "SelfParameters\|Components", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

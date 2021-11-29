@@ -26,8 +26,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void LifeDown(int value);
-	void LifeUp(int value);
+	void LifeDown(int value = 1);
+	void LifeUp(int value = 1);
 
 	UPROPERTY(BlueprintAssignable, Category = "SelfParameters|Delegates")
 		FDeathEvent deathEvent;

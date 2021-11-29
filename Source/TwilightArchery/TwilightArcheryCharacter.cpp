@@ -132,6 +132,9 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 	PlayerInputComponent->BindAction("Toggle Splitscreen", IE_Pressed, this, &ATwilightArcheryCharacter::OnToggleSplitscreen);
 
+	PlayerInputComponent->BindAction("DebugLifeDown", IE_Pressed, this, &ATwilightArcheryCharacter::DebugLifeDown);
+	PlayerInputComponent->BindAction("DebugLifeUp", IE_Pressed, this, &ATwilightArcheryCharacter::DebugLifeUp);
+
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ATwilightArcheryCharacter::OnJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ATwilightArcheryCharacter::OnStopJumping);
 
@@ -416,4 +419,16 @@ bool ATwilightArcheryCharacter::CanJump()
 bool ATwilightArcheryCharacter::CanAim()
 {
 	return BowComponent->CanShoot() && !bIsDodging;
+}
+
+void ATwilightArcheryCharacter::DebugLifeDown()
+{
+	GEngine->AddOnScreenDebugMessage(3805, 1.f, FColor::Green, FString("debugld"));
+	Life->LifeDown(1);
+}
+void ATwilightArcheryCharacter::DebugLifeUp()
+{
+	GEngine->AddOnScreenDebugMessage(38305, 1.f, FColor::Green, FString("debuglu"));
+
+	Life->LifeUp(1);
 }
