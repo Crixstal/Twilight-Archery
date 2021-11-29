@@ -490,4 +490,3 @@ bool ATwilightArcheryCharacter::CanAim()
 {
 	return BowComponent->CanShoot();
 }
-}
