@@ -12,7 +12,6 @@ class TWILIGHTARCHERY_API UStaminaComponent : public UActorComponent
 public:
 	UStaminaComponent();
 
-//protected:
 	virtual void BeginPlay() override;
 
 	class ATwilightArcheryCharacter* player;
@@ -20,7 +19,6 @@ public:
 	void InitPlayer(ATwilightArcheryCharacter* inPlayer);
 
 	FTimerHandle regenTimer;
-	FTimerHandle drainTimer;
 	float regenDelay = 2.f;
 	float deltaTime = 0.f;
 

@@ -19,7 +19,8 @@ void UStaminaComponent::BeginPlay()
 
 void UStaminaComponent::InitPlayer(ATwilightArcheryCharacter* inPlayer)
 {
-	if (inPlayer == nullptr) return;
+	if (inPlayer == nullptr)
+		return;
 
 	player = inPlayer;
 }
@@ -38,10 +39,15 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	if (player->GetVelocity().Size() == 0.f)
 		player->bIsSprinting = false;
 
-	if (player->BowComponent->OnAim())
+	if (player->BowComponent->OnAim() && currentStamina >= aimDrain)
 	{
 		bShouldDrain = true;
 		Drain(aimDrain);
+	}
+	else if (player->BowComponent->OnAim() && currentStamina < aimDrain)
+	{
+		//player->;
+		StopAiming();
 	}
 }
 
@@ -92,6 +98,7 @@ void UStaminaComponent::StartDodging()
 void UStaminaComponent::StopDodging()
 {
 	bShouldDrain = false;
+
 	if (!player->bIsDodging)
 		player->GetWorldTimerManager().SetTimer(regenTimer, this, &UStaminaComponent::Regen, deltaTime, true, regenDelay);
 }
@@ -110,7 +117,7 @@ void UStaminaComponent::Regen()
 
 void UStaminaComponent::Drain(float drainPercentage)
 {
-	if (bShouldDrain)
+	if (bShouldDrain && !player->GetCharacterMovement()->IsFalling())
 	{
 		float newStamina = currentStamina - (deltaTime * drainPercentage);
 		currentStamina = FMath::Clamp(newStamina, 0.f, maxStamina);
@@ -120,7 +127,6 @@ void UStaminaComponent::Drain(float drainPercentage)
 			bShouldDrain = false;
 			player->bIsSprinting = false;
 			player->GetCharacterMovement()->MaxWalkSpeed = player->baseWalkSpeed;
-			player->StopJumping();
 			player->GetWorldTimerManager().SetTimer(regenTimer, this, &UStaminaComponent::Regen, deltaTime, true, regenDelay);
 		}
 	}
@@ -138,8 +144,6 @@ void UStaminaComponent::InstantDrain(float drainPercentage)
 			bShouldDrain = false;
 			player->bIsSprinting = false;
 			player->GetCharacterMovement()->MaxWalkSpeed = player->baseWalkSpeed;
-			player->StopJumping();
-			
 		}
 	}
 }

@@ -271,6 +271,7 @@ void ATwilightArcheryCharacter::StopDodge()
 		if (!GetCharacterMovement()->IsFalling())
 			StartAiming();
 	}
+	
 	Stamina->StopDodging();
 }
 
@@ -411,7 +412,7 @@ void ATwilightArcheryCharacter::PlaceArrowOnBow()
 
 void ATwilightArcheryCharacter::OnJump()
 {
-	if (BowComponent->OnAim()) return;
+	if (!CanJump()) return;
 
 	Jump();
 
