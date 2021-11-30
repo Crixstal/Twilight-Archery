@@ -4,6 +4,10 @@
 #include "Components/ActorComponent.h"
 #include "BowComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChargeDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChargeMaxDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShootDelegate);
+
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TWILIGHTARCHERY_API UBowComponent : public UActorComponent
@@ -21,18 +25,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Self\|Charge")
 		float maxChargeVelocityMultiplier = 1.f;
 
+	UPROPERTY(BlueprintAssignable)
+	FChargeDelegate chargeDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FChargeMaxDelegate chargeMaxDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FShootDelegate shootDelegate;
+
 	UPROPERTY(Category = "Self\|Arrow", EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class AArrow> arrowBP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Self\|Arrow")
 		int maxArrows = 5;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bHasToDrawArrow = true;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bCanShoot = true;
+
 protected:
 
 	bool bIsCharging = false;
 	bool bIsAiming = false;
 	bool bHasShoot = false;
-	bool bCanShoot = true;
+	bool bNeedArrow = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Charge")
 	float timerCharge = 0.f;
@@ -43,8 +59,9 @@ public:
 
 	void OnStartAiming();
 	void OnEndAiming();
+	void CancelAim();
 	void Reload();
-	void OnDrawArrow();
+	void StartCharging();
 	void Shoot(FVector ShootDirection, FTransform ShootTransform);
 
 protected:
@@ -62,6 +79,8 @@ public:
 	bool OnAim();
 	UFUNCTION(BlueprintCallable)
 	bool HasShoot();
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentChargeTime();
 
 	bool CanShoot();
 };
