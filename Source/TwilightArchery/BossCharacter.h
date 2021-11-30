@@ -80,6 +80,9 @@ public:
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Zone Attack")
 			bool zoneAttack = false;
 
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Horn Attack")
+			bool hornAttack = false;
+
 		void ZoneAttack();
 		void StopZoneAttack();
 		FTimerHandle AttZone;
@@ -94,4 +97,15 @@ public:
 		void BasicAttack();
 		void StopBasicAttack();
 		FTimerHandle AttBasic;
+
+	//HornAttack
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components HornAttack")
+			class UBoxComponent* hitBoxHornAttack;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Horn Attack")
+			bool basicHorn = false;
+
+		void HornAttack();
+		void StopHornAttack();
+		FTimerHandle AttHorn;
 };
