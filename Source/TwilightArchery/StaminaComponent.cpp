@@ -46,7 +46,7 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	}
 	else if (player->BowComponent->OnAim() && currentStamina < aimDrain)
 	{
-		//cancel shoot
+		//player->;
 		StopAiming();
 	}
 }
