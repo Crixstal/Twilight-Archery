@@ -65,17 +65,33 @@ public:
 	UWorld* world;
 	TArray<AController*> Players;
 
-	FTimerHandle TimerHandleAtt;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Attack")
-		bool isAttacking = false;
-	int attackingTime = 4.f;
 	void Attacking();
 
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components BasicAttack")
-		class UBoxComponent* hitBoxBasicAttack;
+	bool isAttacking = false;
+	bool isChasing = false;
 
-	void BasicAttack();
-	void StopBasicAttack();
+	//ZoneAttack
+		/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components ZoneAttack")
+			class USphereComponent* hitBoxZoneAttack;*/
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components ZoneAttack")
+			class UBoxComponent* hitZoneAttack;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Zone Attack")
+			bool zoneAttack = false;
+
+		void ZoneAttack();
+		void StopZoneAttack();
+		FTimerHandle AttZone;
+
+	//BasicAttack
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components BasicAttack")
+			class UBoxComponent* hitBoxBasicAttack;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Basic Attack")
+			bool basicAttack = false;
+
+		void BasicAttack();
+		void StopBasicAttack();
+		FTimerHandle AttBasic;
 };

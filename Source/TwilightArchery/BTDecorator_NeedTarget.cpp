@@ -16,6 +16,7 @@ bool UBTDecorator_NeedTarget::CalculateRawConditionValue(UBehaviorTreeComponent&
 	AAIController* actualEnemy = OwnerComp.GetAIOwner();
 	ABossCharacter* npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
 
+
 	if (npc->haveATarget)
 		return false;
 	else

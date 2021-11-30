@@ -19,7 +19,8 @@ UBTTask_GetTarget::UBTTask_GetTarget(FObjectInitializer const& object_initialize
 EBTNodeResult::Type UBTTask_GetTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* actualEnemy = OwnerComp.GetAIOwner();
-	ABossCharacter* npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
+	if (npc == nullptr)
+		npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
 
 	float minDist = -1;
 	int incr = -1;

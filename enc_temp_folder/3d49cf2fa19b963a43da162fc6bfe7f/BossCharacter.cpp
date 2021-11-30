@@ -77,6 +77,9 @@ void ABossCharacter::Tick(float DeltaTime)
 
 void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if(OverlappedComp->GetName() == "BoxZoneAttack")
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Sphere can overlapp")));
+
 	if (OverlappedComp->GetName() == "BoxBasicAttack" || OverlappedComp->GetName() == "BoxZoneAttack")
 	{
 		if (OtherActor->Tags.Num() > 0)
@@ -120,11 +123,11 @@ void ABossCharacter::Attacking()
 
 void ABossCharacter::ZoneAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ZONE ATTACK")));
 	hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	isAttacking = true;
 	zoneAttack = true;
-	GetWorldTimerManager().SetTimer(AttZone, this, &ABossCharacter::Attacking, 2.f, true);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ZONE ATTACK")));
+	GetWorldTimerManager().SetTimer(AttZone, this, &ABossCharacter::Attacking, 3.3f, true);
 	FVector FacingVector = { target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0 };
 	FRotator FacingRotator = FacingVector.Rotation();
 	SetActorRotation(FacingRotator, ETeleportType::None);
@@ -134,11 +137,11 @@ void ABossCharacter::ZoneAttack()
 void ABossCharacter::StopZoneAttack()
 {
 	GetWorldTimerManager().ClearTimer(AttZone);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ZONE ATTACK")));
 	hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	isAttacking = false;
 	zoneAttack = false;
 	isChasing = false;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ZONE ATTACK")));
 }
 
 void ABossCharacter::BasicAttack()

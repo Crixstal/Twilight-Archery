@@ -13,7 +13,8 @@ UBTTask_BasicAttack::UBTTask_BasicAttack(FObjectInitializer const& object_initia
 EBTNodeResult::Type UBTTask_BasicAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* actualEnemy = OwnerComp.GetAIOwner();
-	ABossCharacter* npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
+	if (npc == nullptr)
+		npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
 
 	if (!npc->isAttacking)
 	{
