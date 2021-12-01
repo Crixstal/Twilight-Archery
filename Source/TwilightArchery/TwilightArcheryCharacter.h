@@ -101,6 +101,18 @@ public:
 		bool bIsDodging = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bShouldAim = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+		bool bIsHit = false;
+
+	// _______________________SPEEDS PARAMETERS_____________________________
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* leftHitMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* rightHitMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* upHitMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* downHitMontage;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -117,6 +129,8 @@ public:
 	void PlaceArrowOnBow();
 	UFUNCTION(BlueprintCallable)
 	void OnHit(const FHitResult& Hit);
+	UFUNCTION(BlueprintCallable)
+	void OnEndHit();
 
 private:
 

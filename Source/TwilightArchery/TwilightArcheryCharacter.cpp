@@ -475,17 +475,17 @@ void ATwilightArcheryCharacter::SetLastControlDirection()
 
 bool ATwilightArcheryCharacter::CanSprint()
 {
-	return !(GetCharacterMovement()->IsFalling() || BowComponent->bIsAiming || bIsDodging);
+	return !(GetCharacterMovement()->IsFalling() || BowComponent->bIsAiming || bIsDodging || bIsHit);
 }
 
 bool ATwilightArcheryCharacter::CanDodge()
 {
-	return !(GetCharacterMovement()->IsFalling());
+	return !(GetCharacterMovement()->IsFalling() || bIsHit);
 }
 
 bool ATwilightArcheryCharacter::CanJump()
 {
-	return !(BowComponent->bIsAiming || bIsDodging || Stamina->currentStamina < Stamina->jumpDrain);
+	return !(BowComponent->bIsAiming || bIsDodging || Stamina->currentStamina < Stamina->jumpDrain || bIsHit);
 }
 
 bool ATwilightArcheryCharacter::CanAim()
@@ -509,9 +509,23 @@ void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 {
 	Life->LifeDown(10);
 
+	bIsHit = true;
+
 	if (BowComponent->bIsAiming)
 	{
 		OnAimingEnd();
 		BowComponent->CancelAim();
 	}
+
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+
+	if (!animInstance) return;
+
+	if (rightHitMontage->IsValidToPlay())
+		animInstance->Montage_Play(leftHitMontage, 1.f);
+}
+
+void ATwilightArcheryCharacter::OnEndHit()
+{
+	bIsHit = false;
 }
