@@ -39,12 +39,12 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	if (player->GetVelocity().Size() == 0.f)
 		player->bIsSprinting = false;
 
-	if (player->BowComponent->OnAim() && currentStamina >= aimDrain)
+	if (player->BowComponent->bIsAiming && currentStamina >= aimDrain)
 	{
 		bShouldDrain = true;
 		Drain(aimDrain);
 	}
-	else if (player->BowComponent->OnAim() && currentStamina < aimDrain)
+	else if (player->BowComponent->bIsAiming && currentStamina < aimDrain)
 	{
 		//player->;
 		StopAiming();

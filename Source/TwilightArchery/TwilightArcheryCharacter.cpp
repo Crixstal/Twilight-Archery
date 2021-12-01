@@ -81,6 +81,7 @@ void ATwilightArcheryCharacter::BeginPlay()
 	DodgeCapsule->SetCapsuleRadius(GetCapsuleComponent()->GetUnscaledCapsuleRadius());
 
 	Stamina->InitPlayer(this);
+	Life->InitPlayer(this);
 }
 
 void ATwilightArcheryCharacter::Tick(float DeltaTime)
@@ -107,7 +108,7 @@ void ATwilightArcheryCharacter::UpdateCameraBoom()
 	if (timerArmCamera > 0.f)
 	{
 		float t = timerArmCamera / delayArmBaseToAim;
-		t = BowComponent->OnAim() ? 1.f - t : t;
+		t = BowComponent->bIsAiming ? 1.f - t : t;
 
 		float curveValue = armCurve->GetFloatValue(t);
 
@@ -225,7 +226,7 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 
-		UE_LOG(LogTemp, Warning, TEXT("Direction : %f | %f | %f"), Direction.X, Direction.Y, Direction.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("Direction : %f | %f | %f"), Direction.X, Direction.Y, Direction.Z);
 	}
 
 	rightInputDir = Direction * Value;
@@ -237,7 +238,7 @@ void ATwilightArcheryCharacter::StartDodge()
 
 	lastControlDirection = GetActorForwardVector();
 
-	if (BowComponent->OnAim() && !BowComponent->HasShoot())
+	if (BowComponent->bIsAiming && !BowComponent->bHasShoot)
 	{
 		bShouldAim = true;
 
@@ -286,7 +287,7 @@ void ATwilightArcheryCharacter::StartSprinting()
 
 void ATwilightArcheryCharacter::StopSprinting()
 {
-	if (BowComponent->OnAim()) return;
+	if (BowComponent->bIsAiming) return;
 
 	bIsSprinting = false;
 
@@ -328,7 +329,7 @@ void ATwilightArcheryCharacter::StartAiming()
 void ATwilightArcheryCharacter::StopAiming()
 {
 	// Check if the bow is charged
-	if (!BowComponent->OnCharge())
+	if (!BowComponent->bIsCharging)
 	{
 		bShouldAim = false;
 		OnAimingEnd();
@@ -365,7 +366,7 @@ void ATwilightArcheryCharacter::StopAiming()
 void ATwilightArcheryCharacter::OnAimingEnd()
 {
 	// Check if currently aiming or dodging
-	if (!BowComponent->OnAim()) return;
+	if (!BowComponent->bIsAiming) return;
 
 	BowComponent->OnEndAiming();
 
@@ -418,7 +419,7 @@ void ATwilightArcheryCharacter::OnJump()
 
 void ATwilightArcheryCharacter::OnStopJumping()
 {
-	if (BowComponent->OnAim()) return;
+	if (BowComponent->bIsAiming) return;
 
 	StopJumping();
 
@@ -451,10 +452,7 @@ void ATwilightArcheryCharacter::PauseGame()
 
 void ATwilightArcheryCharacter::SetInvincible(bool value)
 {
-	bIsInvincible = value;
-
-	if (!bIsInvincible)
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Not invincible");
+	Life->SetInvincibility(value, 0.f, true);
 }
 
 void ATwilightArcheryCharacter::SetLastControlDirection()
@@ -474,7 +472,7 @@ void ATwilightArcheryCharacter::SetLastControlDirection()
 
 bool ATwilightArcheryCharacter::CanSprint()
 {
-	return !(GetCharacterMovement()->IsFalling() || BowComponent->OnAim() || bIsDodging);
+	return !(GetCharacterMovement()->IsFalling() || BowComponent->bIsAiming || bIsDodging);
 }
 
 bool ATwilightArcheryCharacter::CanDodge()
@@ -484,7 +482,7 @@ bool ATwilightArcheryCharacter::CanDodge()
 
 bool ATwilightArcheryCharacter::CanJump()
 {
-	return !(BowComponent->OnAim() || bIsDodging || Stamina->currentStamina < Stamina->jumpDrain);
+	return !(BowComponent->bIsAiming || bIsDodging || Stamina->currentStamina < Stamina->jumpDrain);
 }
 
 bool ATwilightArcheryCharacter::CanAim()
@@ -502,6 +500,17 @@ void ATwilightArcheryCharacter::DebugLifeUp()
 	GEngine->AddOnScreenDebugMessage(38305, 1.f, FColor::Green, FString("debuglu"));
 
 	Life->LifeUp(1);
+}
+
+void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
+{
+	Life->LifeDown(10);
+
+	if (BowComponent->bIsAiming)
+	{
+		OnAimingEnd();
+		BowComponent->CancelAim();
+	}
 }
 
 void ATwilightArcheryCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

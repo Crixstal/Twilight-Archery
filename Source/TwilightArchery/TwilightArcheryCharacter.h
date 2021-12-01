@@ -101,8 +101,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bIsDodging = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-		bool bIsInvincible = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bShouldAim = false;
 
 
@@ -118,6 +116,8 @@ public:
 	void TakeArrowBack();
 	UFUNCTION(BlueprintCallable)
 	void PlaceArrowOnBow();
+	UFUNCTION(BlueprintCallable)
+	void OnHit(const FHitResult& Hit);
 
 private:
 

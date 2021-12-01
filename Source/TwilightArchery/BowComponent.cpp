@@ -27,9 +27,13 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (OnCharge())
+	if (bIsCharging && !bIsMaxCharged)
 	{
-		if (timerCharge == maxChargeTime) return;
+		if (timerCharge == maxChargeTime)
+		{
+			bIsMaxCharged = true;
+			return;
+		}
 
 		timerCharge += GetWorld()->GetDeltaSeconds();
 		timerCharge = FMath::Clamp(timerCharge, 0.f, maxChargeTime);
@@ -73,6 +77,7 @@ void UBowComponent::Shoot(FVector ShootDirection, FTransform ShootTransform)
 {
 	bHasShoot = true;
 	bIsCharging = false;
+	bIsMaxCharged = false;
 	bHasToDrawArrow = true;
 	bCanShoot = false;
 
@@ -94,22 +99,10 @@ void UBowComponent::Reload()
 	arrowsCount -= 1;
 
 	if (arrowsCount == 0)
+	{
 		bNeedArrow = false;
-}
-
-bool UBowComponent::OnCharge()
-{
-	return bIsCharging;
-}
-
-bool UBowComponent::OnAim()
-{
-	return bIsAiming;
-}
-
-bool UBowComponent::HasShoot()
-{
-	return bHasShoot;
+		bCanShoot = false;
+	}
 }
 
 bool UBowComponent::CanShoot()
