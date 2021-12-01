@@ -18,8 +18,10 @@ public:
 
 	UBTTask_RandomiseBehavior(FObjectInitializer const& object_initializer);
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	class ABossCharacter* npc;
 
 	std::vector<int> values;
 	int value = 0;
-	int previousValue = 0;
+	int previousValue = -1;
+	int prepreviousValue = -1;
 };

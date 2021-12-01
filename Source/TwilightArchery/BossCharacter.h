@@ -70,18 +70,18 @@ public:
 	bool isAttacking = false;
 	bool isChasing = false;
 
-	//ZoneAttack
-		/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components ZoneAttack")
-			class USphereComponent* hitBoxZoneAttack;*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components Choose Rd Attack")
+		bool chooseRdAtt = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components Selected Attack")
+		int selectedAttack = 0;
+
+	//ZoneAttack
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components ZoneAttack")
 			class UBoxComponent* hitZoneAttack;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Zone Attack")
 			bool zoneAttack = false;
-
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Horn Attack")
-			bool hornAttack = false;
 
 		void ZoneAttack();
 		void StopZoneAttack();
@@ -103,7 +103,7 @@ public:
 			class UBoxComponent* hitBoxHornAttack;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Horn Attack")
-			bool basicHorn = false;
+			bool hornAttack = false;
 
 		void HornAttack();
 		void StopHornAttack();

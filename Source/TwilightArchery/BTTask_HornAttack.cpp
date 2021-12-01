@@ -2,9 +2,6 @@
 
 
 #include "BTTask_HornAttack.h"
-#include "GameFramework/Character.h"
-#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "TwilightArcheryCharacter.h"
 #include "AIController.h"
 #include "BossCharacter.h"
 
@@ -15,6 +12,7 @@ UBTTask_HornAttack::UBTTask_HornAttack(FObjectInitializer const& object_initiali
 
 EBTNodeResult::Type UBTTask_HornAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+
 	AAIController* actualEnemy = OwnerComp.GetAIOwner();
 	if (npc == nullptr)
 		npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
@@ -23,6 +21,8 @@ EBTNodeResult::Type UBTTask_HornAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 	{
 		npc->HornAttack();
 	}
+
+	
 
 	return EBTNodeResult::Succeeded;
 }

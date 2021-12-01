@@ -161,6 +161,7 @@ void ABossCharacter::StopHornAttack()
 	isAttacking = false;
 	hornAttack = false;
 	isChasing = false;
+	chooseRdAtt = true;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP HORN ATTACK")));
 }
 
@@ -181,9 +182,11 @@ void ABossCharacter::BasicAttack()
 void ABossCharacter::StopBasicAttack()
 {
 	GetWorldTimerManager().ClearTimer(AttBasic);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
 	hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	isAttacking = false;
 	basicAttack = false;
 	isChasing = false;
+	chooseRdAtt = true;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
+
 }
