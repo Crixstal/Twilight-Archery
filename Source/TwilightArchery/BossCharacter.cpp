@@ -2,6 +2,7 @@
 
 
 #include "BossCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ABossCharacter::ABossCharacter()
@@ -39,6 +40,8 @@ ABossCharacter::ABossCharacter()
 	hitZoneAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxZoneAttack"));
 	hitZoneAttack->SetupAttachment(RootComponent);
 	
+	//Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
+
 }
 
 // Called when the game starts or when spawned
@@ -70,6 +73,8 @@ void ABossCharacter::BeginPlay()
 		AController* pl = Cast<AController>(*iter);
 		Players.Add(pl);
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 330.f;
 }
 
 // Called every frame
@@ -111,20 +116,50 @@ void ABossCharacter::KeepFocusOnTarget()
 void ABossCharacter::Attacking()
 {
 	if (zoneAttack == true)
-		ABossCharacter::StopZoneAttack();
-	else if(basicAttack == true)
-		ABossCharacter::StopBasicAttack();
+	{
+		if (timeZonAtt >= 1.48f && timeZonAtt <= 1.52f)
+			hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if (timeZonAtt >= 2.f)
+		{
+			hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			ABossCharacter::StopZoneAttack();
+		}
+
+		timeZonAtt += 0.1f;
+		UE_LOG(LogActor, Warning, TEXT("Timer Zone: %f"), timeZonAtt);
+	}
+	else if (basicAttack == true)
+	{
+		if (timeBasAtt >= 1.28f && timeBasAtt <= 1.32f)
+			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if(timeBasAtt >= 1.78f && timeBasAtt <= 1.82f)
+			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		else if(timeBasAtt >= 3.3f)
+			ABossCharacter::StopBasicAttack();
+
+		timeBasAtt += 0.1f;
+		UE_LOG(LogActor, Warning, TEXT("Timer Basic: %f"), timeBasAtt);
+	}
 	else if (hornAttack == true)
-		ABossCharacter::StopHornAttack();
+	{
+		if (timeHorAtt >= 0.58f && timeHorAtt <= 0.62f)
+			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if (timeHorAtt >= 1.48f && timeHorAtt <= 1.52f)
+			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		else if (timeHorAtt >= 2.f)
+			ABossCharacter::StopHornAttack();
+
+		timeHorAtt += 0.1f;
+		UE_LOG(LogActor, Warning, TEXT("Timer horn: %f"), timeHorAtt);
+	}
 }
 
 void ABossCharacter::ZoneAttack()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ZONE ATTACK")));
-	hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	isAttacking = true;
 	zoneAttack = true;
-	GetWorldTimerManager().SetTimer(AttZone, this, &ABossCharacter::Attacking, 2.f, true);
+	GetWorldTimerManager().SetTimer(AttZone, this, &ABossCharacter::Attacking, 0.1f, true);
 	FVector FacingVector = { target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0 };
 	FRotator FacingRotator = FacingVector.Rotation();
 	SetActorRotation(FacingRotator, ETeleportType::None);
@@ -134,20 +169,19 @@ void ABossCharacter::ZoneAttack()
 void ABossCharacter::StopZoneAttack()
 {
 	GetWorldTimerManager().ClearTimer(AttZone);
-	hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	isAttacking = false;
 	zoneAttack = false;
 	isChasing = false;
+	timeZonAtt = 0.f;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ZONE ATTACK")));
 }
 
 void ABossCharacter::HornAttack()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START HORN ATTACK")));
-	hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	isAttacking = true;
 	hornAttack = true;
-	GetWorldTimerManager().SetTimer(AttHorn, this, &ABossCharacter::Attacking, 2.f, true);
+	GetWorldTimerManager().SetTimer(AttHorn, this, &ABossCharacter::Attacking, 0.1f, true);
 	FVector FacingVector = { target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0 };
 	FRotator FacingRotator = FacingVector.Rotation();
 	SetActorRotation(FacingRotator, ETeleportType::None);
@@ -157,20 +191,19 @@ void ABossCharacter::HornAttack()
 void ABossCharacter::StopHornAttack()
 {
 	GetWorldTimerManager().ClearTimer(AttHorn);
-	hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	isAttacking = false;
 	hornAttack = false;
 	isChasing = false;
 	chooseRdAtt = true;
+	timeHorAtt = 0.f;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP HORN ATTACK")));
 }
 
 void ABossCharacter::BasicAttack()
 {
-	hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	isAttacking = true;
 	basicAttack = true;
-	GetWorldTimerManager().SetTimer(AttBasic, this, &ABossCharacter::Attacking, 3.3f, true);
+	GetWorldTimerManager().SetTimer(AttBasic, this, &ABossCharacter::Attacking, 0.1f, true);
 	FVector FacingVector = {target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0};
 	FRotator FacingRotator = FacingVector.Rotation();
 	SetActorRotation(FacingRotator, ETeleportType::None);
@@ -182,11 +215,11 @@ void ABossCharacter::BasicAttack()
 void ABossCharacter::StopBasicAttack()
 {
 	GetWorldTimerManager().ClearTimer(AttBasic);
-	hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	isAttacking = false;
 	basicAttack = false;
 	isChasing = false;
 	chooseRdAtt = true;
+	timeBasAtt = 0.f;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
 
 }

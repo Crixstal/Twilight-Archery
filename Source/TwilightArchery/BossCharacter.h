@@ -47,8 +47,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LegBox")
 		class UBoxComponent* hitBoxRightFrontLegs;
 
-	/*UPROPERTY(VisibleAnywhere, Category = "lifeEnemy")
-		int life = 200;*/
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters|Components")
+		class ULifeComponent* Life;*/
 
 	AActor* target;
 	bool haveATarget = false;
@@ -85,6 +85,7 @@ public:
 
 		void ZoneAttack();
 		void StopZoneAttack();
+		float timeZonAtt = 0;
 		FTimerHandle AttZone;
 
 	//BasicAttack
@@ -96,6 +97,7 @@ public:
 
 		void BasicAttack();
 		void StopBasicAttack();
+		float timeBasAtt = 0;
 		FTimerHandle AttBasic;
 
 	//HornAttack
@@ -107,5 +109,6 @@ public:
 
 		void HornAttack();
 		void StopHornAttack();
+		float timeHorAtt = 0;
 		FTimerHandle AttHorn;
 };
