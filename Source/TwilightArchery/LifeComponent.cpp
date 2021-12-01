@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "LifeComponent.h"
+#include "TwilightArcheryCharacter.h"
 
 // Sets default values for this component's properties
 ULifeComponent::ULifeComponent()
@@ -21,17 +22,49 @@ void ULifeComponent::BeginPlay()
 void ULifeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	UE_LOG(LogTemp, Warning, TEXT("Invincibility : %d"), bIsInvincible);
+
+	if (bIsInvincible)
+	{
+		if (bInvincibilityToggle) return;
+
+		if (timerInvincibility > 0.f)
+		{
+			timerInvincibility -= GetWorld()->GetDeltaSeconds();
+			return;
+		}
+
+		ResetInvincibility();
+	}
+}
+
+void ULifeComponent::InitPlayer(ATwilightArcheryCharacter* inPlayer)
+{
+	if (inPlayer == nullptr)
+		return;
+
+	player = inPlayer;
 }
 
 void ULifeComponent::LifeDown(int value)
 {
+	if (bIsInvincible) return;
+
 	if (currentLife > 0)
 	{
 		currentLife -= value;
 		healthUpdate.Broadcast();
 
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, TEXT("IL S'EST FAIT HIT CE FDP"));
+
+		SetInvincibility(true, cooldownOnHit, false);
+
 		if (currentLife <= 0)
+		{
 			deathEvent.Broadcast();
+			return;
+		}
 	}
 }
 
@@ -42,4 +75,32 @@ void ULifeComponent::LifeUp(int value)
 		currentLife += value;
 		healthUpdate.Broadcast();
 	}
+}
+
+void ULifeComponent::ResetInvincibility()
+{
+	bIsInvincible = false;
+	bInvincibilityToggle = false;
+}
+
+void ULifeComponent::SetInvincibility(bool value, float coolDown, bool toggle)
+{
+	if (!value)
+	{
+		ResetInvincibility();
+		return;
+	}
+
+	bIsInvincible = true;
+
+	if (toggle)
+	{
+		//timerInvincibility =;
+		bInvincibilityToggle = true;
+
+		return;
+	}
+
+	timerInvincibility = coolDown;
+	bInvincibilityToggle = false;
 }
