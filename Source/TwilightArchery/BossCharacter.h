@@ -67,7 +67,9 @@ public:
 
 	void Attacking();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	bool isAttacking = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	bool isChasing = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components Choose Rd Attack")
