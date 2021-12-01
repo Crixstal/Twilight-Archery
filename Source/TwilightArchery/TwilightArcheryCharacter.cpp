@@ -14,9 +14,6 @@
 
 #define ARROW_SOCKET FName("ArrowSocket")
 
-//////////////////////////////////////////////////////////////////////////
-// ATwilightArcheryCharacter
-
 ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 {
 	// Set size for collision capsule
@@ -222,7 +219,7 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
+
 		// get right vector 
 		Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
@@ -505,4 +502,9 @@ void ATwilightArcheryCharacter::DebugLifeUp()
 	GEngine->AddOnScreenDebugMessage(38305, 1.f, FColor::Green, FString("debuglu"));
 
 	Life->LifeUp(1);
+}
+
+void ATwilightArcheryCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
 }
