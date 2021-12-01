@@ -18,7 +18,7 @@ ATwilightArcheryGameMode::ATwilightArcheryGameMode()
 
 void ATwilightArcheryGameMode::BeginPlay()
 {
-	/*UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
 
 	for (AActor* playerStart : playerStarts)
 		if (playerStart->ActorHasTag(TEXT("P1")))

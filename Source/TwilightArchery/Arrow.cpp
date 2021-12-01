@@ -45,7 +45,7 @@ void AArrow::Initialize(FVector velocity)
 void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "ArrowHit");
-
+	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//ProjectileComponent->DestroyComponent();
 }
 
