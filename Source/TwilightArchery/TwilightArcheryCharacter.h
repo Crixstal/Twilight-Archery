@@ -92,6 +92,8 @@ public:
 	float aimWalkSpeed = 300.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
 	float dodgeSpeed = 400.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
+	float hitWalkSpeed = 200.f;
 
 
 	// _______________________OTHER PARAMETERS_____________________________
@@ -167,6 +169,10 @@ private:
 	//FVector inputDirection = FVector::ZeroVector;
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector hitDirection = FVector::ZeroVector;
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface

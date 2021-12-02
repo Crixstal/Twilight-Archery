@@ -104,6 +104,9 @@ void ATwilightArcheryCharacter::Tick(float DeltaTime)
 		//SetActorLocation(newPos);
 		AddMovementInput(lastControlDirection, 1.f);
 	}
+
+	if (bIsHit)
+		AddMovementInput(lastControlDirection, 1.f);
 }
 
 void ATwilightArcheryCharacter::UpdateCameraBoom()
@@ -199,7 +202,7 @@ void ATwilightArcheryCharacter::MoveForward(float Value)
 	if (Controller == nullptr) return;
 
 	FVector Direction;
-	if (Value != 0.0f && !bIsDodging)
+	if (Value != 0.0f && !bIsDodging && !bIsHit)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -218,7 +221,7 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 	if (Controller == nullptr) return;
 
 	FVector Direction;
-	if ( Value != 0.0f && !bIsDodging)
+	if ( Value != 0.0f && !bIsDodging && !bIsHit)
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -490,7 +493,7 @@ bool ATwilightArcheryCharacter::CanJump()
 
 bool ATwilightArcheryCharacter::CanAim()
 {
-	return BowComponent->CanShoot();
+	return BowComponent->CanShoot() && !bIsHit;
 }
 
 void ATwilightArcheryCharacter::DebugLifeDown()
@@ -507,9 +510,7 @@ void ATwilightArcheryCharacter::DebugLifeUp()
 
 void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 {
-	Life->LifeDown(10);
-
-	bIsHit = true;
+	if (bIsHit) return;
 
 	if (BowComponent->bIsAiming)
 	{
@@ -517,15 +518,54 @@ void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 		BowComponent->CancelAim();
 	}
 
-	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if (bIsDodging)
+		StopDodge();
 
-	if (!animInstance) return;
+	bIsHit = true;
+	Life->LifeDown(10);
 
-	if (rightHitMontage->IsValidToPlay())
-		animInstance->Montage_Play(leftHitMontage, 1.f);
+	GetCharacterMovement()->MaxWalkSpeed = hitWalkSpeed;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	FVector actorForward = GetActorForwardVector();
+	FVector normalHit = Hit.Normal;
+	normalHit.Z = 0.f;
+
+	if (normalHit.Equals(FVector::ZeroVector, 0.001f))
+	{
+		hitDirection = FVector(0.f, 1.f, 0.f);
+		return;
+	}
+
+	FVector zAxis = FVector::CrossProduct(normalHit, actorForward);
+	float absAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(actorForward, normalHit)));
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "On Hit");
+	UE_LOG(LogTemp, Warning, TEXT("Angle : %f"), absAngle);
+
+	if (absAngle < 45.f)
+	{
+		hitDirection = FVector(0.f, 1.f, 0.f);
+		lastControlDirection = -actorForward;
+	}
+	else if (absAngle < 135.f)
+	{
+		hitDirection = FVector(1.f, 0.f, 0.f) * FMath::Sign(zAxis.Z);
+		lastControlDirection = GetActorRightVector() * hitDirection.X;
+	}
+	else
+	{
+		hitDirection = FVector(0.f, -1.f, 0.f);
+		lastControlDirection = actorForward;
+	}
 }
 
 void ATwilightArcheryCharacter::OnEndHit()
 {
 	bIsHit = false;
+
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "End Hit");
 }

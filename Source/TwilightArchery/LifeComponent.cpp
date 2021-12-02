@@ -23,7 +23,7 @@ void ULifeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UE_LOG(LogTemp, Warning, TEXT("Invincibility : %d"), bIsInvincible);
+	//UE_LOG(LogTemp, Warning, TEXT("Invincibility : %d"), bIsInvincible);
 
 	if (bIsInvincible)
 	{
@@ -56,7 +56,7 @@ void ULifeComponent::LifeDown(int value)
 		currentLife -= value;
 		healthUpdate.Broadcast();
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, TEXT("IL S'EST FAIT HIT CE FDP"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, TEXT("Player Life Down"));
 
 		SetInvincibility(true, cooldownOnHit, false);
 
@@ -95,7 +95,6 @@ void ULifeComponent::SetInvincibility(bool value, float coolDown, bool toggle)
 
 	if (toggle)
 	{
-		//timerInvincibility =;
 		bInvincibilityToggle = true;
 
 		return;
