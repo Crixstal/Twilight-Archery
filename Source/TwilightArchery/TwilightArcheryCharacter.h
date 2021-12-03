@@ -33,6 +33,7 @@ private:
 
 	void DebugLifeDown();
 	void DebugLifeUp();
+
 public:
 
 	UPROPERTY(Category = "SelfParameters\|Components", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
