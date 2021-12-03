@@ -13,23 +13,46 @@ ABossCharacter::ABossCharacter()
 	hitBoxHead = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxHead"));
 	hitBoxHead->SetupAttachment(GetMesh(), "HeadSocket");
 
+	hitBoxNeck = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxNeck"));
+	hitBoxNeck->SetupAttachment(GetMesh(), "NeckSocket");
+
 	hitBoxBodyBack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBodyBack"));
 	hitBoxBodyBack->SetupAttachment(GetMesh(), "Back");
 
 	hitBoxBodyFront = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBodyFront"));
 	hitBoxBodyFront->SetupAttachment(GetMesh(), "Front");
 
+
 	hitBoxLeftBackLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftBackLegs"));
 	hitBoxLeftBackLegs->SetupAttachment(GetMesh(), "LeftBackLeg");
+
+	hitBoxLeftBackFeet = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftBackFeet"));
+	hitBoxLeftBackFeet->SetupAttachment(GetMesh(), "L_feetSocket");
 
 	hitBoxLeftFrontLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftFrontLegs"));
 	hitBoxLeftFrontLegs->SetupAttachment(GetMesh(), "LeftFrontLeg");
 
+	hitBoxLeftFrontArm = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftFrontArm"));
+	hitBoxLeftFrontArm->SetupAttachment(GetMesh(), "L_UpperArmSocket");
+
+	hitBoxSpineRight = CreateDefaultSubobject<UBoxComponent>(TEXT("SpineRight"));
+	hitBoxSpineRight->SetupAttachment(GetMesh(), "R_Shoulder02Socket");
+
+	hitBoxSpineLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("SpineLeft"));
+	hitBoxSpineLeft->SetupAttachment(GetMesh(), "L_Shoulder02Socket");
+
 	hitBoxRightBackLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightBackLegs"));
 	hitBoxRightBackLegs->SetupAttachment(GetMesh(), "RightBackLeg");
 
+	hitBoxRightBackFeet = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightBackFeet"));
+	hitBoxRightBackFeet->SetupAttachment(GetMesh(), "R_feetSocket");
+
 	hitBoxRightFrontLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightFrontLegs"));
 	hitBoxRightFrontLegs->SetupAttachment(GetMesh(), "RightFrontLeg");
+
+	hitBoxRightFrontArm = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightFrontArm"));
+	hitBoxRightFrontArm->SetupAttachment(GetMesh(), "R_UpperArmSocket");
+
 
 	hitBoxBasicAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBasicAttack"));
 	hitBoxBasicAttack->SetupAttachment(GetMesh(), "R_HandSocket"); 
@@ -52,10 +75,16 @@ void ABossCharacter::BeginPlay()
 	hitBoxHead->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxBodyBack->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxBodyFront->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxSpineLeft->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxSpineRight->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxLeftBackLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxLeftBackFeet->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxLeftFrontLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxLeftFrontArm->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxRightBackLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxRightBackFeet->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxRightFrontLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxRightFrontArm->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	
 	hitBoxBasicAttack->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
