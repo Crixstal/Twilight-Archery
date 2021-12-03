@@ -49,6 +49,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
 		bool bIsAiming = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bShouldAim = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
 		bool bHasShoot = false;
 
 protected:
@@ -69,6 +71,9 @@ public:
 	void StartCharging();
 	void Shoot(FVector ShootDirection, FTransform ShootTransform);
 
+	//void Lock();
+	//void Unlock();
+
 protected:
 
 	// Called when the game starts
@@ -82,4 +87,5 @@ public:
 	float GetCurrentChargeTime();
 
 	bool CanShoot();
+	bool CanEndAiming();
 };

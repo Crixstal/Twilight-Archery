@@ -38,12 +38,16 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		timerCharge += GetWorld()->GetDeltaSeconds();
 		timerCharge = FMath::Clamp(timerCharge, 0.f, maxChargeTime);
 	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("Is Aiming : %d"), bIsAiming);
 }
 
 void UBowComponent::OnStartAiming()
 {
+	timerCharge = 0.f;
 	bIsAiming = true;
 	bIsCharging = false;
+	bShouldAim = false;
 
 	if (!bHasToDrawArrow)
 		StartCharging();
@@ -107,10 +111,15 @@ void UBowComponent::Reload()
 
 bool UBowComponent::CanShoot()
 {
-	return bCanShoot && !bNeedArrow;
+	return /*bCanShoot &&*/ !bNeedArrow;
 }
 
 float UBowComponent::GetCurrentChargeTime()
 {
 	return timerCharge;
+}
+
+bool UBowComponent::CanEndAiming()
+{
+	return bIsAiming; //&& !bShouldAim;
 }

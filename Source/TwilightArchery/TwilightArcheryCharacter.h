@@ -93,6 +93,10 @@ public:
 	float aimWalkSpeed = 300.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
 	float dodgeSpeed = 400.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
+	float hitWalkSpeed = 200.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
+	float lowStaminaWalkSpeed = 300.f;
 
 
 	// _______________________OTHER PARAMETERS_____________________________
@@ -101,7 +105,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bIsDodging = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-		bool bShouldAim = false;
+		bool bIsHit = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+		bool bIsJumping = false;
+
+	// _______________________SPEEDS PARAMETERS_____________________________
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* leftHitMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* rightHitMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* upHitMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* downHitMontage;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -118,6 +134,11 @@ public:
 	void PlaceArrowOnBow();
 	UFUNCTION(BlueprintCallable)
 	void OnHit(const FHitResult& Hit);
+	UFUNCTION(BlueprintCallable)
+	void OnEndHit();
+
+	void OnStaminaRegen();
+	void OnStaminaEmpty();
 
 private:
 
@@ -154,6 +175,10 @@ private:
 	//FVector inputDirection = FVector::ZeroVector;
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector hitDirection = FVector::ZeroVector;
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
