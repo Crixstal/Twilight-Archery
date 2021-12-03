@@ -44,6 +44,7 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 void UBowComponent::OnStartAiming()
 {
+	timerCharge = 0.f;
 	bIsAiming = true;
 	bIsCharging = false;
 	bShouldAim = false;
