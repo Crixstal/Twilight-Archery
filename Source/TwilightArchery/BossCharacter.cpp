@@ -85,7 +85,7 @@ void ABossCharacter::BeginPlay()
 	hitBoxRightBackFeet->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxRightFrontLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxRightFrontArm->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
-	
+
 	hitBoxBasicAttack->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 	
@@ -163,7 +163,7 @@ void ABossCharacter::Attacking()
 			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		else if(timeBasAtt >= 1.78f && timeBasAtt <= 1.82f)
 			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		else if(timeBasAtt >= 3.3f)
+		else if(timeBasAtt >= 3.33f)
 			ABossCharacter::StopBasicAttack();
 
 		timeBasAtt += 0.1f;
