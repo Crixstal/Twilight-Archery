@@ -26,6 +26,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters|Components")
+		class ULifeComponent* Life;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components HeadBox")
 		class UBoxComponent* hitBoxHead;
 
@@ -67,9 +70,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components RightFrontArmBox")
 		class UBoxComponent* hitBoxRightFrontArm;
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters|Components")
-		class ULifeComponent* Life;*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Target")
 	AActor* target;

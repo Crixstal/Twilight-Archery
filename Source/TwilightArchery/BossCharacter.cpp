@@ -2,6 +2,7 @@
 
 
 #include "BossCharacter.h"
+#include "LifeComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -63,7 +64,7 @@ ABossCharacter::ABossCharacter()
 	hitZoneAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxZoneAttack"));
 	hitZoneAttack->SetupAttachment(RootComponent);
 	
-	//Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
+	Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
 
 }
 
