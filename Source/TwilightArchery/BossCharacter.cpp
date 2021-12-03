@@ -156,7 +156,7 @@ void ABossCharacter::Attacking()
 
 void ABossCharacter::ZoneAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ZONE ATTACK")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ZONE ATTACK")));
 	isAttacking = true;
 	zoneAttack = true;
 	GetWorldTimerManager().SetTimer(AttZone, this, &ABossCharacter::Attacking, 0.1f, true);
@@ -173,12 +173,12 @@ void ABossCharacter::StopZoneAttack()
 	zoneAttack = false;
 	isChasing = false;
 	timeZonAtt = 0.f;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ZONE ATTACK")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ZONE ATTACK")));
 }
 
 void ABossCharacter::HornAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START HORN ATTACK")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START HORN ATTACK")));
 	isAttacking = true;
 	hornAttack = true;
 	GetWorldTimerManager().SetTimer(AttHorn, this, &ABossCharacter::Attacking, 0.1f, true);
@@ -196,7 +196,7 @@ void ABossCharacter::StopHornAttack()
 	isChasing = false;
 	chooseRdAtt = true;
 	timeHorAtt = 0.f;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP HORN ATTACK")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP HORN ATTACK")));
 }
 
 void ABossCharacter::BasicAttack()
@@ -220,6 +220,6 @@ void ABossCharacter::StopBasicAttack()
 	isChasing = false;
 	chooseRdAtt = true;
 	timeBasAtt = 0.f;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
 
 }
