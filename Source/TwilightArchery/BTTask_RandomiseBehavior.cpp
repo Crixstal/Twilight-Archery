@@ -42,20 +42,21 @@ EBTNodeResult::Type UBTTask_RandomiseBehavior::ExecuteTask(UBehaviorTreeComponen
 	{
 		prepreviousValue = previousValue;
 		previousValue = value;
+
+		
+
 		int incr = FMath::RandRange(1, numberOfScript * 3);
 		value = values[incr - 1];
 
-		if (value == 0)
+
+		while (value == 0)
 		{
-			if (previousValue == value)
-				value = prepreviousValue;
-			else
-			{
-				values[prepreviousValue * 3 - 2] = 0;
-				value = previousValue;
-			}
+			incr = FMath::RandRange(1, numberOfScript * 3);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ET NON PAS CELLE LA")));
+			value = values[incr - 1];
 		}
-		else if (value == previousValue)
+
+		if (value == previousValue)
 			values[value * 3 - 2] = 0;
 		else 
 		{
@@ -63,16 +64,26 @@ EBTNodeResult::Type UBTTask_RandomiseBehavior::ExecuteTask(UBehaviorTreeComponen
 			{
 				values[prepreviousValue * 3 - 1] = prepreviousValue;
 				values[prepreviousValue * 3 - 2] = prepreviousValue;
+				values[prepreviousValue * 3 - 3] = prepreviousValue;
 			}
 			else
 			{
 				values[previousValue * 3 - 1] = previousValue;
 				values[previousValue * 3 - 2] = previousValue;
+				values[previousValue * 3 - 3] = previousValue;
 			}
 			
 			values[value * 3 - 1] = 0;
 		}
 	}
+
+
+	for(int i = 0; i < values.size(); i++)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("Values: %d"), values[i]));
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Prepreviousvalue = %d"), prepreviousValue));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Previousvalue = %d"), previousValue));
+
 	npc->selectedAttack = value;
 	npc->chooseRdAtt = false;
 

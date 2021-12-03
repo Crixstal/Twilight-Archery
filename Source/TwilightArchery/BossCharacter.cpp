@@ -2,6 +2,7 @@
 
 
 #include "BossCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ABossCharacter::ABossCharacter()
@@ -12,23 +13,46 @@ ABossCharacter::ABossCharacter()
 	hitBoxHead = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxHead"));
 	hitBoxHead->SetupAttachment(GetMesh(), "HeadSocket");
 
+	hitBoxNeck = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxNeck"));
+	hitBoxNeck->SetupAttachment(GetMesh(), "NeckSocket");
+
 	hitBoxBodyBack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBodyBack"));
 	hitBoxBodyBack->SetupAttachment(GetMesh(), "Back");
 
 	hitBoxBodyFront = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBodyFront"));
 	hitBoxBodyFront->SetupAttachment(GetMesh(), "Front");
 
+
 	hitBoxLeftBackLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftBackLegs"));
 	hitBoxLeftBackLegs->SetupAttachment(GetMesh(), "LeftBackLeg");
+
+	hitBoxLeftBackFeet = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftBackFeet"));
+	hitBoxLeftBackFeet->SetupAttachment(GetMesh(), "L_feetSocket");
 
 	hitBoxLeftFrontLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftFrontLegs"));
 	hitBoxLeftFrontLegs->SetupAttachment(GetMesh(), "LeftFrontLeg");
 
+	hitBoxLeftFrontArm = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxLeftFrontArm"));
+	hitBoxLeftFrontArm->SetupAttachment(GetMesh(), "L_UpperArmSocket");
+
+	hitBoxSpineRight = CreateDefaultSubobject<UBoxComponent>(TEXT("SpineRight"));
+	hitBoxSpineRight->SetupAttachment(GetMesh(), "R_Shoulder02Socket");
+
+	hitBoxSpineLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("SpineLeft"));
+	hitBoxSpineLeft->SetupAttachment(GetMesh(), "L_Shoulder02Socket");
+
 	hitBoxRightBackLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightBackLegs"));
 	hitBoxRightBackLegs->SetupAttachment(GetMesh(), "RightBackLeg");
 
+	hitBoxRightBackFeet = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightBackFeet"));
+	hitBoxRightBackFeet->SetupAttachment(GetMesh(), "R_feetSocket");
+
 	hitBoxRightFrontLegs = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightFrontLegs"));
 	hitBoxRightFrontLegs->SetupAttachment(GetMesh(), "RightFrontLeg");
+
+	hitBoxRightFrontArm = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxRightFrontArm"));
+	hitBoxRightFrontArm->SetupAttachment(GetMesh(), "R_UpperArmSocket");
+
 
 	hitBoxBasicAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxBasicAttack"));
 	hitBoxBasicAttack->SetupAttachment(GetMesh(), "R_HandSocket"); 
@@ -39,6 +63,8 @@ ABossCharacter::ABossCharacter()
 	hitZoneAttack = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxZoneAttack"));
 	hitZoneAttack->SetupAttachment(RootComponent);
 	
+	//Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
+
 }
 
 // Called when the game starts or when spawned
@@ -49,11 +75,17 @@ void ABossCharacter::BeginPlay()
 	hitBoxHead->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxBodyBack->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxBodyFront->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxSpineLeft->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxSpineRight->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxLeftBackLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxLeftBackFeet->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxLeftFrontLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxLeftFrontArm->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxRightBackLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+	hitBoxRightBackFeet->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxRightFrontLegs->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
-	
+	hitBoxRightFrontArm->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
+
 	hitBoxBasicAttack->OnComponentBeginOverlap.AddDynamic(this, &ABossCharacter::OnOverlapBegin);
 	hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 	
@@ -70,6 +102,8 @@ void ABossCharacter::BeginPlay()
 		AController* pl = Cast<AController>(*iter);
 		Players.Add(pl);
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 330.f;
 }
 
 // Called every frame
@@ -111,20 +145,50 @@ void ABossCharacter::KeepFocusOnTarget()
 void ABossCharacter::Attacking()
 {
 	if (zoneAttack == true)
-		ABossCharacter::StopZoneAttack();
-	else if(basicAttack == true)
-		ABossCharacter::StopBasicAttack();
+	{
+		if (timeZonAtt >= 1.48f && timeZonAtt <= 1.52f)
+			hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if (timeZonAtt >= 2.f)
+		{
+			hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			ABossCharacter::StopZoneAttack();
+		}
+
+		timeZonAtt += 0.1f;
+		UE_LOG(LogActor, Warning, TEXT("Timer Zone: %f"), timeZonAtt);
+	}
+	else if (basicAttack == true)
+	{
+		if (timeBasAtt >= 1.28f && timeBasAtt <= 1.32f)
+			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if(timeBasAtt >= 1.78f && timeBasAtt <= 1.82f)
+			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		else if(timeBasAtt >= 3.33f)
+			ABossCharacter::StopBasicAttack();
+
+		timeBasAtt += 0.1f;
+		UE_LOG(LogActor, Warning, TEXT("Timer Basic: %f"), timeBasAtt);
+	}
 	else if (hornAttack == true)
-		ABossCharacter::StopHornAttack();
+	{
+		if (timeHorAtt >= 0.58f && timeHorAtt <= 0.62f)
+			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if (timeHorAtt >= 1.48f && timeHorAtt <= 1.52f)
+			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		else if (timeHorAtt >= 2.f)
+			ABossCharacter::StopHornAttack();
+
+		timeHorAtt += 0.1f;
+		UE_LOG(LogActor, Warning, TEXT("Timer horn: %f"), timeHorAtt);
+	}
 }
 
 void ABossCharacter::ZoneAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ZONE ATTACK")));
-	hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ZONE ATTACK")));
 	isAttacking = true;
 	zoneAttack = true;
-	GetWorldTimerManager().SetTimer(AttZone, this, &ABossCharacter::Attacking, 2.f, true);
+	GetWorldTimerManager().SetTimer(AttZone, this, &ABossCharacter::Attacking, 0.1f, true);
 	FVector FacingVector = { target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0 };
 	FRotator FacingRotator = FacingVector.Rotation();
 	SetActorRotation(FacingRotator, ETeleportType::None);
@@ -134,20 +198,19 @@ void ABossCharacter::ZoneAttack()
 void ABossCharacter::StopZoneAttack()
 {
 	GetWorldTimerManager().ClearTimer(AttZone);
-	hitZoneAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	isAttacking = false;
 	zoneAttack = false;
 	isChasing = false;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ZONE ATTACK")));
+	timeZonAtt = 0.f;
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ZONE ATTACK")));
 }
 
 void ABossCharacter::HornAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START HORN ATTACK")));
-	hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START HORN ATTACK")));
 	isAttacking = true;
 	hornAttack = true;
-	GetWorldTimerManager().SetTimer(AttHorn, this, &ABossCharacter::Attacking, 2.f, true);
+	GetWorldTimerManager().SetTimer(AttHorn, this, &ABossCharacter::Attacking, 0.1f, true);
 	FVector FacingVector = { target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0 };
 	FRotator FacingRotator = FacingVector.Rotation();
 	SetActorRotation(FacingRotator, ETeleportType::None);
@@ -157,20 +220,19 @@ void ABossCharacter::HornAttack()
 void ABossCharacter::StopHornAttack()
 {
 	GetWorldTimerManager().ClearTimer(AttHorn);
-	hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	isAttacking = false;
 	hornAttack = false;
 	isChasing = false;
 	chooseRdAtt = true;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP HORN ATTACK")));
+	timeHorAtt = 0.f;
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP HORN ATTACK")));
 }
 
 void ABossCharacter::BasicAttack()
 {
-	hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	isAttacking = true;
 	basicAttack = true;
-	GetWorldTimerManager().SetTimer(AttBasic, this, &ABossCharacter::Attacking, 3.3f, true);
+	GetWorldTimerManager().SetTimer(AttBasic, this, &ABossCharacter::Attacking, 0.1f, true);
 	FVector FacingVector = {target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0};
 	FRotator FacingRotator = FacingVector.Rotation();
 	SetActorRotation(FacingRotator, ETeleportType::None);
@@ -182,11 +244,11 @@ void ABossCharacter::BasicAttack()
 void ABossCharacter::StopBasicAttack()
 {
 	GetWorldTimerManager().ClearTimer(AttBasic);
-	hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	isAttacking = false;
 	basicAttack = false;
 	isChasing = false;
 	chooseRdAtt = true;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
+	timeBasAtt = 0.f;
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
 
 }

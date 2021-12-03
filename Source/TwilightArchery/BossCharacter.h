@@ -29,26 +29,47 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components HeadBox")
 		class UBoxComponent* hitBoxHead;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components NeckBox")
+		class UBoxComponent* hitBoxNeck;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components BodyBoxBack")
 		class UBoxComponent* hitBoxBodyBack; 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components BodyBoxFront")
 		class UBoxComponent* hitBoxBodyFront;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LegBox")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components SpineRight")
+		class UBoxComponent* hitBoxSpineRight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components SpineLeft")
+		class UBoxComponent* hitBoxSpineLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LeftBackLegBox")
 		class UBoxComponent* hitBoxLeftBackLegs;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LegBox")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LeftBackFeetBox")
+		class UBoxComponent* hitBoxLeftBackFeet;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components RightBackLegBox")
 		class UBoxComponent* hitBoxRightBackLegs;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LegBox")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components RightBackFeetBox")
+		class UBoxComponent* hitBoxRightBackFeet;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LeftFrontLegBox")
 		class UBoxComponent* hitBoxLeftFrontLegs;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LegBox")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components LeftFrontArmBox")
+		class UBoxComponent* hitBoxLeftFrontArm;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components RightFrontLegBox")
 		class UBoxComponent* hitBoxRightFrontLegs;
 
-	/*UPROPERTY(VisibleAnywhere, Category = "lifeEnemy")
-		int life = 200;*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components RightFrontArmBox")
+		class UBoxComponent* hitBoxRightFrontArm;
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters|Components")
+		class ULifeComponent* Life;*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Target")
 	AActor* target;
@@ -88,6 +109,7 @@ public:
 
 		void ZoneAttack();
 		void StopZoneAttack();
+		float timeZonAtt = 0;
 		FTimerHandle AttZone;
 
 	//BasicAttack
@@ -99,6 +121,7 @@ public:
 
 		void BasicAttack();
 		void StopBasicAttack();
+		float timeBasAtt = 0;
 		FTimerHandle AttBasic;
 
 	//HornAttack
@@ -110,5 +133,6 @@ public:
 
 		void HornAttack();
 		void StopHornAttack();
+		float timeHorAtt = 0;
 		FTimerHandle AttHorn;
 };

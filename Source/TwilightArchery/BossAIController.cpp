@@ -16,6 +16,7 @@ ABossAIController::ABossAIController(const FObjectInitializer& ObjectInitializer
 	blackboard = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboradComp"));
 
 	SetActorTickEnabled(true);
+
 }
 
 void ABossAIController::BeginPlay()
