@@ -27,19 +27,27 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (OnCharge())
+	if (bIsCharging && !bIsMaxCharged)
 	{
-		if (timerCharge == maxChargeTime) return;
+		if (timerCharge == maxChargeTime)
+		{
+			bIsMaxCharged = true;
+			return;
+		}
 
 		timerCharge += GetWorld()->GetDeltaSeconds();
 		timerCharge = FMath::Clamp(timerCharge, 0.f, maxChargeTime);
 	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("Is Aiming : %d"), bIsAiming);
 }
 
 void UBowComponent::OnStartAiming()
 {
+	timerCharge = 0.f;
 	bIsAiming = true;
 	bIsCharging = false;
+	bShouldAim = false;
 
 	if (!bHasToDrawArrow)
 		StartCharging();
@@ -73,6 +81,7 @@ void UBowComponent::Shoot(FVector ShootDirection, FTransform ShootTransform)
 {
 	bHasShoot = true;
 	bIsCharging = false;
+	bIsMaxCharged = false;
 	bHasToDrawArrow = true;
 	bCanShoot = false;
 
@@ -94,30 +103,23 @@ void UBowComponent::Reload()
 	arrowsCount -= 1;
 
 	if (arrowsCount == 0)
+	{
 		bNeedArrow = false;
-}
-
-bool UBowComponent::OnCharge()
-{
-	return bIsCharging;
-}
-
-bool UBowComponent::OnAim()
-{
-	return bIsAiming;
-}
-
-bool UBowComponent::HasShoot()
-{
-	return bHasShoot;
+		bCanShoot = false;
+	}
 }
 
 bool UBowComponent::CanShoot()
 {
-	return bCanShoot && !bNeedArrow;
+	return /*bCanShoot &&*/ !bNeedArrow;
 }
 
 float UBowComponent::GetCurrentChargeTime()
 {
 	return timerCharge;
+}
+
+bool UBowComponent::CanEndAiming()
+{
+	return bIsAiming; //&& !bShouldAim;
 }

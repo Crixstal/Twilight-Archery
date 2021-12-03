@@ -42,12 +42,19 @@ public:
 		bool bHasToDrawArrow = true;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
 		bool bCanShoot = true;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bIsCharging = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bIsMaxCharged = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bIsAiming = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bShouldAim = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Arrow")
+		bool bHasShoot = false;
 
 protected:
 
-	bool bIsCharging = false;
-	bool bIsAiming = false;
-	bool bHasShoot = false;
 	bool bNeedArrow = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Self\|Charge")
@@ -64,6 +71,9 @@ public:
 	void StartCharging();
 	void Shoot(FVector ShootDirection, FTransform ShootTransform);
 
+	//void Lock();
+	//void Unlock();
+
 protected:
 
 	// Called when the game starts
@@ -74,13 +84,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	bool OnCharge();
-	UFUNCTION(BlueprintCallable)
-	bool OnAim();
-	UFUNCTION(BlueprintCallable)
-	bool HasShoot();
-	UFUNCTION(BlueprintCallable)
 	float GetCurrentChargeTime();
 
 	bool CanShoot();
+	bool CanEndAiming();
 };

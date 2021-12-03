@@ -22,6 +22,8 @@ public:
 	float regenDelay = 2.f;
 	float deltaTime = 0.f;
 
+	bool bShouldRegenPlayer = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	float currentStamina = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")

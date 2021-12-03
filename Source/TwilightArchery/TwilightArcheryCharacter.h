@@ -5,6 +5,7 @@
 #include "BowComponent.h"
 #include "Camera/CameraShake.h"
 #include "GameFramework/Character.h"
+#include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "TwilightArcheryCharacter.generated.h"
 
@@ -32,6 +33,7 @@ private:
 
 	void DebugLifeDown();
 	void DebugLifeUp();
+
 public:
 
 	UPROPERTY(Category = "SelfParameters\|Components", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -92,6 +94,10 @@ public:
 	float aimWalkSpeed = 300.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
 	float dodgeSpeed = 400.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
+	float hitWalkSpeed = 200.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
+	float lowStaminaWalkSpeed = 300.f;
 
 
 	// _______________________OTHER PARAMETERS_____________________________
@@ -100,9 +106,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bIsDodging = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-		bool bIsInvincible = false;
+		bool bIsHit = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-		bool bShouldAim = false;
+		bool bIsJumping = false;
+
+	// _______________________SPEEDS PARAMETERS_____________________________
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* leftHitMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* rightHitMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* upHitMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
+		UAnimMontage* downHitMontage;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -117,6 +133,13 @@ public:
 	void TakeArrowBack();
 	UFUNCTION(BlueprintCallable)
 	void PlaceArrowOnBow();
+	UFUNCTION(BlueprintCallable)
+	void OnHit(const FHitResult& Hit);
+	UFUNCTION(BlueprintCallable)
+	void OnEndHit();
+
+	void OnStaminaRegen();
+	void OnStaminaEmpty();
 
 private:
 
@@ -153,6 +176,10 @@ private:
 	//FVector inputDirection = FVector::ZeroVector;
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector hitDirection = FVector::ZeroVector;
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
@@ -174,5 +201,9 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
 

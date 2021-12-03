@@ -22,12 +22,20 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	class ATwilightArcheryCharacter* player;
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void InitPlayer(ATwilightArcheryCharacter* inPlayer);
+
+	UFUNCTION(BlueprintCallable)
 	void LifeDown(int value = 1);
+
 	void LifeUp(int value = 1);
+
+	void SetInvincibility(bool value, float coolDown, bool toggle = false);
 
 	UPROPERTY(BlueprintAssignable, Category = "SelfParameters|Delegates")
 		FDeathEvent deathEvent;
@@ -38,4 +46,17 @@ public:
 		int currentLife = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 		int maxLife = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SelfParameters")
+		float cooldownOnHit = 0.5f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters|Booleans")
+		bool bIsInvincible = false;
+
+private:
+	float invincibilityCooldown = 0.f;
+	float timerInvincibility = 0.f;
+	bool bInvincibilityToggle = false;
+
+	void ResetInvincibility();
 };

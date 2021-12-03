@@ -36,19 +36,19 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		bShouldDrain = true;
 		Drain(sprintDrain);
 	}
-	if (player->GetVelocity().Size() == 0.f)
-		player->bIsSprinting = false;
+	//if (player->GetVelocity().Size() == 0.f)
+		//player->bIsSprinting = false;
 
-	if (player->BowComponent->OnAim() && currentStamina >= aimDrain)
+	if (player->BowComponent->bIsAiming/* && currentStamina >= aimDrain*/)
 	{
 		bShouldDrain = true;
 		Drain(aimDrain);
 	}
-	else if (player->BowComponent->OnAim() && currentStamina < aimDrain)
+	/*else if (player->BowComponent->bIsAiming && currentStamina < aimDrain)
 	{
 		//player->;
 		StopAiming();
-	}
+	}*/
 }
 
 void UStaminaComponent::OnJump()
@@ -107,6 +107,12 @@ void UStaminaComponent::Regen()
 {
 	if (!bShouldDrain && !player->GetCharacterMovement()->IsFalling() && !player->bIsSprinting)
 	{
+		if (bShouldRegenPlayer)
+		{
+			bShouldRegenPlayer = false;
+			player->OnStaminaRegen();
+		}
+
 		if (currentStamina != maxStamina)
 		{
 			float newStamina = currentStamina + (deltaTime * 20.f);
@@ -125,8 +131,10 @@ void UStaminaComponent::Drain(float drainPercentage)
 		if (currentStamina == 0.f)
 		{
 			bShouldDrain = false;
-			player->bIsSprinting = false;
-			player->GetCharacterMovement()->MaxWalkSpeed = player->baseWalkSpeed;
+			bShouldRegenPlayer = true;
+			player->OnStaminaEmpty();
+			//player->bIsSprinting = false;
+			//player->GetCharacterMovement()->MaxWalkSpeed = player->baseWalkSpeed;
 			player->GetWorldTimerManager().SetTimer(regenTimer, this, &UStaminaComponent::Regen, deltaTime, true, regenDelay);
 		}
 	}
@@ -142,8 +150,10 @@ void UStaminaComponent::InstantDrain(float drainPercentage)
 		if (currentStamina == 0.f)
 		{
 			bShouldDrain = false;
-			player->bIsSprinting = false;
-			player->GetCharacterMovement()->MaxWalkSpeed = player->baseWalkSpeed;
+			bShouldRegenPlayer = true;
+			player->OnStaminaEmpty();
+			//player->bIsSprinting = false;
+			//player->GetCharacterMovement()->MaxWalkSpeed = player->baseWalkSpeed;
 		}
 	}
 }
