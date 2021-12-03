@@ -105,6 +105,8 @@ public:
 		bool bIsDodging = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bIsHit = false;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
+		bool bIsJumping = false;
 
 	// _______________________SPEEDS PARAMETERS_____________________________
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")

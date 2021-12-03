@@ -448,15 +448,17 @@ void ATwilightArcheryCharacter::OnJump()
 	if (!CanJump()) return;
 
 	Jump();
+	bIsJumping = true;
 
 	Stamina->OnJump();
 }
 
 void ATwilightArcheryCharacter::OnStopJumping()
 {
-	if (BowComponent->bIsAiming) return;
+	if (!bIsJumping || BowComponent->bIsAiming) return;
 
 	StopJumping();
+	bIsJumping = false;
 
 	Stamina->OnStopJumping();
 }
