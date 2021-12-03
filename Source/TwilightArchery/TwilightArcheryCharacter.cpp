@@ -93,6 +93,8 @@ void ATwilightArcheryCharacter::Tick(float DeltaTime)
 
 	UpdateCameraBoom();
 
+	UE_LOG(LogTemp, Warning, TEXT("Walk Speed : %f"), GetCharacterMovement()->MaxWalkSpeed);
+
 	if (bIsDodging)
 	{
 		if (GetCharacterMovement()->IsFalling())
@@ -246,16 +248,19 @@ void ATwilightArcheryCharacter::StartDodge()
 
 	if (BowComponent->bIsAiming && !BowComponent->bHasShoot)
 	{
-		bShouldAim = true;
 
 		OnAimingEnd();
 		BowComponent->CancelAim();
+
+		BowComponent->bShouldAim = true;
 
 		SetLastControlDirection();
 	}
 
 	bIsDodging = true;
 	SetInvincible(true);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Dodge Speed");
 
 	GetCharacterMovement()->MaxWalkSpeed = dodgeSpeed;
 
@@ -267,21 +272,27 @@ void ATwilightArcheryCharacter::StopDodge()
 	bIsDodging = false;
 	SetInvincible(false);
 
-	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+	Stamina->StopDodging();
 
-	if (bShouldAim)
+	if (BowComponent->bShouldAim)
 	{
-		bShouldAim = false;
+		BowComponent->bShouldAim = false;
 		if (!GetCharacterMovement()->IsFalling())
 			StartAiming();
+
+		return;
 	}
-	
-	Stamina->StopDodging();
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Dodge Base Speed");
+
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 }
 
 void ATwilightArcheryCharacter::StartSprinting()
 {
 	if (!CanSprint()) return;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Sprint Start");
 
 	GetCharacterMovement()->MaxWalkSpeed = sprintWalkSpeed;
 
@@ -293,9 +304,11 @@ void ATwilightArcheryCharacter::StartSprinting()
 
 void ATwilightArcheryCharacter::StopSprinting()
 {
-	if (BowComponent->bIsAiming) return;
+	if (!bIsSprinting || BowComponent->bIsAiming) return;
 
 	bIsSprinting = false;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Sprint Base Speed");
 
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 
@@ -306,9 +319,11 @@ void ATwilightArcheryCharacter::StartAiming()
 {
 	if (!CanAim()) return;
 
-	if (bIsDodging)
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "StartAiming");
+
+	if (BowComponent->bIsAiming || bIsDodging)
 	{
-		bShouldAim = true;
+		BowComponent->bShouldAim = true;
 		return;
 	}
 
@@ -320,6 +335,8 @@ void ATwilightArcheryCharacter::StartAiming()
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		GetCharacterMovement()->MaxWalkSpeed = aimWalkSpeed;
 
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Aim walkSpeed");
+
 		bUseControllerRotationRoll = true;
 		bUseControllerRotationYaw = true;
 	}
@@ -328,7 +345,6 @@ void ATwilightArcheryCharacter::StartAiming()
 	timerArmCamera = timerArmCamera > 0.f ? delayArmBaseToAim - timerArmCamera : delayArmBaseToAim;
 
 	Stamina->StartAiming();
-
 	BowComponent->OnStartAiming();
 }
 
@@ -337,8 +353,10 @@ void ATwilightArcheryCharacter::StopAiming()
 	// Check if the bow is charged
 	if (!BowComponent->bIsCharging)
 	{
-		bShouldAim = false;
+		BowComponent->bShouldAim = false;
 		OnAimingEnd();
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Stop Aiming");
 
 		return;
 	}
@@ -372,12 +390,23 @@ void ATwilightArcheryCharacter::StopAiming()
 void ATwilightArcheryCharacter::OnAimingEnd()
 {
 	// Check if currently aiming or dodging
-	if (!BowComponent->bIsAiming) return;
+	if (!BowComponent->CanEndAiming()) return;
+
+	if (BowComponent->bShouldAim)
+	{
+		BowComponent->OnEndAiming();
+		BowComponent->OnStartAiming();
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Aiming End");
 
 	BowComponent->OnEndAiming();
 
 	// Set base character movement control
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "AimEnd Base Speed");
+
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 
@@ -402,13 +431,13 @@ void ATwilightArcheryCharacter::DrawArrow()
 
 void ATwilightArcheryCharacter::TakeArrowBack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Take Back");
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Take Back");
 	ArrowHandMesh->SetHiddenInGame(false);
 }
 
 void ATwilightArcheryCharacter::PlaceArrowOnBow()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Place Bow");
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Place Bow");
 	ArrowHandMesh->SetHiddenInGame(true);
 	ArrowBowMesh->SetHiddenInGame(false);
 	BowComponent->StartCharging();
@@ -483,7 +512,7 @@ bool ATwilightArcheryCharacter::CanSprint()
 
 bool ATwilightArcheryCharacter::CanDodge()
 {
-	return !(GetCharacterMovement()->IsFalling() || bIsHit);
+	return !(GetCharacterMovement()->IsFalling() || bIsHit || Stamina->currentStamina < Stamina->dodgeDrain);
 }
 
 bool ATwilightArcheryCharacter::CanJump()
@@ -493,7 +522,7 @@ bool ATwilightArcheryCharacter::CanJump()
 
 bool ATwilightArcheryCharacter::CanAim()
 {
-	return BowComponent->CanShoot() && !bIsHit;
+	return BowComponent->CanShoot() && !bIsHit && Stamina->currentStamina >= Stamina->aimDrain;
 }
 
 void ATwilightArcheryCharacter::DebugLifeDown()
@@ -510,7 +539,7 @@ void ATwilightArcheryCharacter::DebugLifeUp()
 
 void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 {
-	if (bIsHit) return;
+	if (Life->bIsInvincible) return;
 
 	if (BowComponent->bIsAiming)
 	{
@@ -521,8 +550,13 @@ void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 	if (bIsDodging)
 		StopDodge();
 
+	if (bIsSprinting)
+		StopSprinting();
+
 	bIsHit = true;
 	Life->LifeDown(10);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Hit Speed");
 
 	GetCharacterMovement()->MaxWalkSpeed = hitWalkSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -541,7 +575,7 @@ void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 	float absAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(actorForward, normalHit)));
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "On Hit");
-	UE_LOG(LogTemp, Warning, TEXT("Angle : %f"), absAngle);
+	//UE_LOG(LogTemp, Warning, TEXT("Angle : %f"), absAngle);
 
 	if (absAngle < 45.f)
 	{
@@ -564,8 +598,32 @@ void ATwilightArcheryCharacter::OnEndHit()
 {
 	bIsHit = false;
 
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "End hit Speed");
+
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	Life->SetInvincibility(false, 0.f);
+
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "End Hit");
+}
+
+void ATwilightArcheryCharacter::OnStaminaRegen()
+{
+	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
+}
+
+void ATwilightArcheryCharacter::OnStaminaEmpty()
+{
+	if (BowComponent->bIsAiming)
+	{
+		OnAimingEnd();
+		BowComponent->CancelAim();
+	}
+
+	if (bIsSprinting)
+		StopSprinting();
+
+	GetCharacterMovement()->MaxWalkSpeed = lowStaminaWalkSpeed;
 }

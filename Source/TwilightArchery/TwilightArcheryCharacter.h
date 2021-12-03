@@ -94,6 +94,8 @@ public:
 	float dodgeSpeed = 400.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
 	float hitWalkSpeed = 200.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|WalkSpeeds")
+	float lowStaminaWalkSpeed = 300.f;
 
 
 	// _______________________OTHER PARAMETERS_____________________________
@@ -101,8 +103,6 @@ public:
 		bool bIsSprinting = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bIsDodging = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
-		bool bShouldAim = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bIsHit = false;
 
@@ -133,6 +133,9 @@ public:
 	void OnHit(const FHitResult& Hit);
 	UFUNCTION(BlueprintCallable)
 	void OnEndHit();
+
+	void OnStaminaRegen();
+	void OnStaminaEmpty();
 
 private:
 

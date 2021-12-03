@@ -58,7 +58,7 @@ void ULifeComponent::LifeDown(int value)
 
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, TEXT("Player Life Down"));
 
-		SetInvincibility(true, cooldownOnHit, false);
+		SetInvincibility(true, 0.f, true);
 
 		if (currentLife <= 0)
 		{
