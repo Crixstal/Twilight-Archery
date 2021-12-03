@@ -50,6 +50,7 @@ public:
 	/*UPROPERTY(VisibleAnywhere, Category = "lifeEnemy")
 		int life = 200;*/
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Target")
 	AActor* target;
 	bool haveATarget = false;
 
