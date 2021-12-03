@@ -26,6 +26,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+	UFUNCTION()
+		void OnBossTakeHit();
+
+	UFUNCTION()
+		void OnBossDeath();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters|Components")
 		class ULifeComponent* Life;
 

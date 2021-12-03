@@ -3,6 +3,7 @@
 
 #include "BossCharacter.h"
 #include "LifeComponent.h"
+#include "TwilightArcheryCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -105,6 +106,22 @@ void ABossCharacter::BeginPlay()
 	}
 
 	GetCharacterMovement()->MaxWalkSpeed = 330.f;
+
+	//Life->deathEvent.AddDynamic(this, &ABossCharacter::OnBossDeath);
+	//Life->healthUpdate.AddDynamic(this, &ABossCharacter::OnBossTakeHit);
+
+}
+
+void ABossCharacter::OnBossTakeHit()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Boss take hit")));
+
+}
+
+void ABossCharacter::OnBossDeath()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Boss ded")));
+
 }
 
 // Called every frame
@@ -119,9 +136,11 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 	{
 		if (OtherActor->Tags.Num() > 0)
 		{
-			if (OtherComp->GetName() == "CollisionCylinder" && OtherActor->Tags[0] == "Player")
+			if (OtherActor->ActorHasTag(TEXT("Player")))
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
+				ATwilightArcheryCharacter* player = Cast<ATwilightArcheryCharacter>(OtherActor);
+				player->Life->LifeDown(10);
 			}
 		}
 	}
