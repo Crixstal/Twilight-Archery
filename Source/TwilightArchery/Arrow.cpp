@@ -2,6 +2,7 @@
 
 
 #include "Arrow.h"
+#include "BossCharacter.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 
@@ -44,8 +45,13 @@ void AArrow::Initialize(FVector velocity)
 
 void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "ArrowHit");
 	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (Cast<ABossCharacter>(OtherActor))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "ArrowHit");
+	}
+
 	//ProjectileComponent->DestroyComponent();
 }
 
