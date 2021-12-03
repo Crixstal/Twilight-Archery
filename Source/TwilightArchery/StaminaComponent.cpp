@@ -36,19 +36,12 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		bShouldDrain = true;
 		Drain(sprintDrain);
 	}
-	//if (player->GetVelocity().Size() == 0.f)
-		//player->bIsSprinting = false;
 
-	if (player->BowComponent->bIsAiming/* && currentStamina >= aimDrain*/)
+	if (player->BowComponent->bIsAiming)
 	{
 		bShouldDrain = true;
 		Drain(aimDrain);
 	}
-	/*else if (player->BowComponent->bIsAiming && currentStamina < aimDrain)
-	{
-		//player->;
-		StopAiming();
-	}*/
 }
 
 void UStaminaComponent::OnJump()
@@ -133,8 +126,6 @@ void UStaminaComponent::Drain(float drainPercentage)
 			bShouldDrain = false;
 			bShouldRegenPlayer = true;
 			player->OnStaminaEmpty();
-			//player->bIsSprinting = false;
-			//player->GetCharacterMovement()->MaxWalkSpeed = player->baseWalkSpeed;
 			player->GetWorldTimerManager().SetTimer(regenTimer, this, &UStaminaComponent::Regen, deltaTime, true, regenDelay);
 		}
 	}
@@ -152,8 +143,6 @@ void UStaminaComponent::InstantDrain(float drainPercentage)
 			bShouldDrain = false;
 			bShouldRegenPlayer = true;
 			player->OnStaminaEmpty();
-			//player->bIsSprinting = false;
-			//player->GetCharacterMovement()->MaxWalkSpeed = player->baseWalkSpeed;
 		}
 	}
 }
