@@ -18,6 +18,9 @@ public:
 	
 	UPROPERTY(VisibleAnywhere)
 	TArray<AActor*> playerStarts;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<AActor*> players;
 };
 
 

@@ -18,7 +18,7 @@ ATwilightArcheryGameMode::ATwilightArcheryGameMode()
 
 void ATwilightArcheryGameMode::BeginPlay()
 {
-	/*UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
 
 	for (AActor* playerStart : playerStarts)
 		if (playerStart->ActorHasTag(TEXT("P1")))
@@ -27,7 +27,26 @@ void ATwilightArcheryGameMode::BeginPlay()
 			break;
 		}
 
-	UGameplayStatics::CreatePlayer(GetWorld());*/
+	UGameplayStatics::CreatePlayer(GetWorld());
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), DefaultPawnClass, players);
+
+	// Remove potential excess players
+	int i = players.Num();
+	while (i > 2)
+	{
+		AActor* toDelete = players.Last();
+		toDelete->Destroy();
+		players.Remove(toDelete);
+		i = players.Num();
+	}
+
+	// Updates splitscreen
+	auto gameViewport = GetWorld()->GetGameViewport();
+	gameViewport->SetForceDisableSplitscreen(false);
+	gameViewport->MaxSplitscreenPlayers = 2;
+	gameViewport->UpdateActiveSplitscreenType();
+
 	Super::BeginPlay();
 }
 
