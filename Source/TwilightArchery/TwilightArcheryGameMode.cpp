@@ -18,7 +18,7 @@ ATwilightArcheryGameMode::ATwilightArcheryGameMode()
 
 void ATwilightArcheryGameMode::BeginPlay()
 {
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
+	/*UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), playerStarts);
 
 	for (AActor* playerStart : playerStarts)
 		if (playerStart->ActorHasTag(TEXT("P1")))
@@ -45,7 +45,7 @@ void ATwilightArcheryGameMode::BeginPlay()
 	auto gameViewport = GetWorld()->GetGameViewport();
 	gameViewport->SetForceDisableSplitscreen(false);
 	gameViewport->MaxSplitscreenPlayers = 2;
-	gameViewport->UpdateActiveSplitscreenType();
+	gameViewport->UpdateActiveSplitscreenType();*/
 
 	Super::BeginPlay();
 }
