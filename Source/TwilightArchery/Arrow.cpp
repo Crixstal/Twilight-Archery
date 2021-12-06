@@ -55,7 +55,11 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 		//TODO: Send to enemy what body part was hit to calculate damage res
 		ABossCharacter* enemy = Cast<ABossCharacter>(OtherActor);
 		enemy->Life->LifeDown(10);
+		//AttachToActor()
+		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
+		//Mesh->SetupAttachment(OtherComp);
+		//this->SetRootComponent(OtherComp);
 	}
-
+	//CapsuleComponent->DestroyComponent();
 	//ProjectileComponent->DestroyComponent();
 }
