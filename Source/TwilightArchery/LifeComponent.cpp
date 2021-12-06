@@ -39,12 +39,12 @@ void ULifeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	}
 }
 
-void ULifeComponent::InitPlayer(ATwilightArcheryCharacter* inPlayer)
+void ULifeComponent::InitActor(AActor* inActor)
 {
-	if (inPlayer == nullptr)
+	if (inActor == nullptr)
 		return;
 
-	player = inPlayer;
+	selfActor = inActor;
 }
 
 void ULifeComponent::LifeDown(int value)
@@ -56,9 +56,7 @@ void ULifeComponent::LifeDown(int value)
 		currentLife -= value;
 		healthUpdate.Broadcast();
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, TEXT("Player Life Down"));
-
-		SetInvincibility(true, 0.f, true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, selfActor->GetName() + TEXT(" Life Down"));
 
 		if (currentLife <= 0)
 		{

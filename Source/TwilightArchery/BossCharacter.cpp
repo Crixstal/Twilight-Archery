@@ -107,20 +107,21 @@ void ABossCharacter::BeginPlay()
 
 	GetCharacterMovement()->MaxWalkSpeed = 330.f;
 
-	//Life->deathEvent.AddDynamic(this, &ABossCharacter::OnBossDeath);
-	//Life->healthUpdate.AddDynamic(this, &ABossCharacter::OnBossTakeHit);
+	Life->InitActor(this);
+	Life->deathEvent.AddDynamic(this, &ABossCharacter::OnBossDeath);
+	Life->healthUpdate.AddDynamic(this, &ABossCharacter::OnBossTakeHit);
 
 }
 
 void ABossCharacter::OnBossTakeHit()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Boss take hit")));
+	GEngine->AddOnScreenDebugMessage(-10, 5.f, FColor::Red, FString::Printf(TEXT("Boss take hit")));
 
 }
 
 void ABossCharacter::OnBossDeath()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Boss ded")));
+	GEngine->AddOnScreenDebugMessage(-245, 5.f, FColor::Red, FString::Printf(TEXT("Boss ded")));
 
 }
 
@@ -138,7 +139,7 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 		{
 			if (OtherActor->ActorHasTag(TEXT("Player")))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
+				GEngine->AddOnScreenDebugMessage(-451, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
 				ATwilightArcheryCharacter* player = Cast<ATwilightArcheryCharacter>(OtherActor);
 				player->Life->LifeDown(10);
 			}
