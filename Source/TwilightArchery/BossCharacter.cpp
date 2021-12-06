@@ -202,6 +202,18 @@ void ABossCharacter::Attacking()
 		timeHorAtt += 0.1f;
 		UE_LOG(LogActor, Warning, TEXT("Timer horn: %f"), timeHorAtt);
 	}
+	else if (rockAttack == true)
+	{
+		//if (timeRockAtt >= 0.58f && timeRockAtt <= 0.62f)
+		//	hitBoxRockAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		//else if (timeRockAtt >= 1.48f && timeRockAtt <= 1.52f)
+		//	hitBoxRockAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//else if (timeRockAtt >= 2.f)
+		//	ABossCharacter::StopRockAttack();
+
+		timeRockAtt += 0.1f;
+		UE_LOG(LogActor, Warning, TEXT("Timer rock: %f"), timeRockAtt);
+	}
 }
 
 void ABossCharacter::ZoneAttack()
@@ -272,4 +284,24 @@ void ABossCharacter::StopBasicAttack()
 	timeBasAtt = 0.f;
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
 
+}
+
+void ABossCharacter::RockAttack()
+{
+	isAttacking = true;
+	rockAttack = true;
+	GetWorldTimerManager().SetTimer(AttRock, this, &ABossCharacter::Attacking, 0.1f, true);
+	FVector FacingVector = { target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0 };
+	FRotator FacingRotator = FacingVector.Rotation();
+	SetActorRotation(FacingRotator, ETeleportType::None);
+}
+
+void ABossCharacter::StopRockAttack()
+{
+	GetWorldTimerManager().ClearTimer(AttRock);
+	isAttacking = false;
+	rockAttack = false;
+	isChasing = false;
+	chooseRdAtt = true;
+	timeRockAtt = 0.f;
 }

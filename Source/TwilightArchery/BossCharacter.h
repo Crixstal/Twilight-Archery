@@ -142,4 +142,16 @@ public:
 		void StopHornAttack();
 		float timeHorAtt = 0;
 		FTimerHandle AttHorn;
+
+	//RockAttack
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components RockAttack")
+			class UBoxComponent* hitBoxRockAttack;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Rock Attack")
+			bool rockAttack = false;
+
+		void RockAttack();
+		void StopRockAttack();
+		float timeRockAtt = 0;
+		FTimerHandle AttRock;
 };
