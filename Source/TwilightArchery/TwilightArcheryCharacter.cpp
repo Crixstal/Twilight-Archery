@@ -201,7 +201,7 @@ void ATwilightArcheryCharacter::MoveForward(float Value)
 	if (Controller == nullptr) return;
 
 	FVector Direction;
-	if (Value != 0.0f && !bIsDodging && !bIsHit)
+	if (Value != 0.0f && !bIsDodging && !bIsHit && !bIsClimbing)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -220,7 +220,7 @@ void ATwilightArcheryCharacter::MoveRight(float Value)
 	if (Controller == nullptr) return;
 
 	FVector Direction;
-	if ( Value != 0.0f && !bIsDodging && !bIsHit)
+	if ( Value != 0.0f && !bIsDodging && !bIsHit && !bIsClimbing)
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -506,22 +506,22 @@ void ATwilightArcheryCharacter::SetLastControlDirection()
 
 bool ATwilightArcheryCharacter::CanSprint()
 {
-	return !(GetCharacterMovement()->IsFalling() || BowComponent->bIsAiming || bIsDodging || bIsHit);
+	return !(GetCharacterMovement()->IsFalling() || BowComponent->bIsAiming || bIsDodging || bIsHit || bIsClimbing);
 }
 
 bool ATwilightArcheryCharacter::CanDodge()
 {
-	return !(GetCharacterMovement()->IsFalling() || bIsHit || Stamina->currentStamina < Stamina->dodgeDrain);
+	return !(GetCharacterMovement()->IsFalling() || bIsHit || Stamina->currentStamina < Stamina->dodgeDrain || bIsClimbing);
 }
 
 bool ATwilightArcheryCharacter::CanJump()
 {
-	return !(BowComponent->bIsAiming || bIsDodging || Stamina->currentStamina < Stamina->jumpDrain || bIsHit);
+	return !(BowComponent->bIsAiming || bIsDodging || Stamina->currentStamina < Stamina->jumpDrain || bIsHit || bIsClimbing);
 }
 
 bool ATwilightArcheryCharacter::CanAim()
 {
-	return BowComponent->CanShoot() && !bIsHit && Stamina->currentStamina >= Stamina->aimDrain;
+	return BowComponent->CanShoot() && !bIsHit && Stamina->currentStamina >= Stamina->aimDrain && !bIsClimbing;
 }
 
 void ATwilightArcheryCharacter::DebugLifeDown()
@@ -570,7 +570,6 @@ void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 		return;
 	}
 
-	FVector zAxis = FVector::CrossProduct(normalHit, actorForward);
 	float absAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(actorForward, normalHit)));
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "On Hit");
@@ -583,6 +582,7 @@ void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 	}
 	else if (absAngle < 135.f)
 	{
+		FVector zAxis = FVector::CrossProduct(normalHit, actorForward);
 		hitDirection = FVector(1.f, 0.f, 0.f) * FMath::Sign(zAxis.Z);
 		lastControlDirection = GetActorRightVector() * hitDirection.X;
 	}

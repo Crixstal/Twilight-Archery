@@ -109,6 +109,8 @@ public:
 		bool bIsHit = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Booleans")
 		bool bIsJumping = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Booleans")
+		bool bIsClimbing = false;
 
 	// _______________________SPEEDS PARAMETERS_____________________________
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
