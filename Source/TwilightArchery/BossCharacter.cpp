@@ -67,7 +67,8 @@ ABossCharacter::ABossCharacter()
 	
 	Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
 
-
+	Life->maxLife = 250;
+	Life->currentLife = Life->maxLife;
 	damage = 10;
 }
 
@@ -178,14 +179,9 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 void ABossCharacter::KeepFocusOnTarget()
 {
 	if (focustime > 0)
-	{
 		focustime -= 1.f;
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("-1 seconde")));
-
-	}
 	else
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("EndCoolDown")));
 		haveATarget = false;
 		GetWorldTimerManager().ClearTimer(TimerHandleKFOT);
 	}
@@ -204,7 +200,6 @@ void ABossCharacter::Attacking()
 		}
 
 		timeZonAtt += 0.1f;
-		UE_LOG(LogActor, Warning, TEXT("Timer Zone: %f"), timeZonAtt);
 	}
 	else if (basicAttack == true)
 	{
@@ -214,9 +209,14 @@ void ABossCharacter::Attacking()
 			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		else if(timeBasAtt >= 3.33f)
 			ABossCharacter::StopBasicAttack();
+		else if (timeBasAtt >= 0.68f && timeBasAtt <= 0.72f && isInRage)
+			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if (timeBasAtt >= 0.98f && timeBasAtt <= 1.02f && isInRage)
+			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if (timeBasAtt >= 1.82F && isInRage)
+			ABossCharacter::StopBasicAttack();
 
 		timeBasAtt += 0.1f;
-		UE_LOG(LogActor, Warning, TEXT("Timer Basic: %f"), timeBasAtt);
 	}
 	else if (hornAttack == true)
 	{
@@ -226,9 +226,14 @@ void ABossCharacter::Attacking()
 			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		else if (timeHorAtt >= 2.f)
 			ABossCharacter::StopHornAttack();
+		else if (timeHorAtt >= 0.28f && timeHorAtt <= 0.32f && isInRage)
+			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if (timeHorAtt >= 0.78f && timeHorAtt <= 0.82f && isInRage)
+			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if (timeHorAtt >= 1.02F && isInRage)
+			ABossCharacter::StopHornAttack();
 
 		timeHorAtt += 0.1f;
-		UE_LOG(LogActor, Warning, TEXT("Timer horn: %f"), timeHorAtt);
 	}
 }
 
