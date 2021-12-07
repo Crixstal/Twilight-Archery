@@ -9,6 +9,8 @@
 #include "TwilightArcheryCharacter.h"
 #include "BossCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRockAttackEvent);
+
 UCLASS()
 class TWILIGHTARCHERY_API ABossCharacter : public ACharacter
 {
@@ -32,6 +34,9 @@ public:
 
 	UFUNCTION()
 		void OnBossDeath();
+
+	UPROPERTY(BlueprintAssignable, Category = "SelfParameters|Delegates")
+		FRockAttackEvent rockAttackEvent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters|Components")
 		class ULifeComponent* Life;
