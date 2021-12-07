@@ -44,6 +44,16 @@ void AArrow::Initialize(FVector velocity)
 	ProjectileComponent->ProjectileGravityScale = 0.6;
 }
 
+float AArrow::GetMultiplier(const FName& key, const TMap<FName, float>& multipliers)
+{
+	const float* value = multipliers.Find(key);
+
+	if (value != nullptr)
+		return *value;
+	else
+		return 1.f;
+}
+
 void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -52,13 +62,13 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 	if (OtherActor->ActorHasTag(TEXT("Enemy")))
 	{
 		GEngine->AddOnScreenDebugMessage(78663, 5.f, FColor::Emerald, OtherActor->GetName());
-		//TODO: Send to enemy what body part was hit to calculate damage res
+		
 		ABossCharacter* enemy = Cast<ABossCharacter>(OtherActor);
-		enemy->Life->LifeDown(10);
-		//AttachToActor()
+
+		float multiplier = GetMultiplier(OtherComp->ComponentTags.Last(), enemy->multipliers);
+		enemy->Life->LifeDown(damage * multiplier);
+
 		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
-		//Mesh->SetupAttachment(OtherComp);
-		//this->SetRootComponent(OtherComp);
 	}
 	//CapsuleComponent->DestroyComponent();
 	//ProjectileComponent->DestroyComponent();
