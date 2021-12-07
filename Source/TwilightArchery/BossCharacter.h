@@ -100,6 +100,13 @@ public:
 	bool isAttacking = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	bool isChasing = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
+	bool isInRage = false;
+
+	FTimerHandle TimerHandleRage;
+	void Raging();
+	int cdRaging = 20;
+	int damage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components Choose Rd Attack")
 		bool chooseRdAtt = true;

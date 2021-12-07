@@ -67,6 +67,8 @@ ABossCharacter::ABossCharacter()
 	
 	Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
 
+
+	damage = 10;
 }
 
 // Called when the game starts or when spawned
@@ -117,6 +119,32 @@ void ABossCharacter::OnBossTakeHit()
 {
 	GEngine->AddOnScreenDebugMessage(-10, 5.f, FColor::Red, FString::Printf(TEXT("Boss take hit")));
 
+	if (Life->currentLife <= (Life->maxLife * 0.7) && !isInRage && cdRaging == 20)
+	{
+		isInRage = true;
+		GetWorldTimerManager().SetTimer(TimerHandleRage, this, &ABossCharacter::Raging, 1.f, true);
+	}
+}
+
+void ABossCharacter::Raging()
+{
+	if (cdRaging == 20)
+	{
+		damage = 20;
+		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		GEngine->AddOnScreenDebugMessage(1000000, 5.f, FColor::Red, FString::Printf(TEXT("Boss is in Rage")));
+		cdRaging--;
+	}
+	else if (cdRaging == 0)
+	{
+		isInRage = false;
+		damage = 10;
+		GetCharacterMovement()->MaxWalkSpeed = 330.f;
+		GEngine->AddOnScreenDebugMessage(1000000, 5.f, FColor::Red, FString::Printf(TEXT("Boss is not anymore in Rage")));
+		GetWorldTimerManager().ClearTimer(TimerHandleKFOT);
+	}
+	else
+		cdRaging--;
 }
 
 void ABossCharacter::OnBossDeath()
@@ -141,7 +169,7 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 			{
 				GEngine->AddOnScreenDebugMessage(-451, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
 				ATwilightArcheryCharacter* player = Cast<ATwilightArcheryCharacter>(OtherActor);
-				player->Life->LifeDown(10);
+				player->Life->LifeDown(damage);
 			}
 		}
 	}
