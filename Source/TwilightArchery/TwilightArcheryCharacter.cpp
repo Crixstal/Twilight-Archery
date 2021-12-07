@@ -55,7 +55,7 @@ ATwilightArcheryCharacter::ATwilightArcheryCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	DodgeCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("DodgeCapsule"));
-	DodgeCapsule->SetupAttachment(GetMesh());
+	DodgeCapsule->SetupAttachment(GetMesh(), FName("BaseLocation"));
 
 	BowComponent = CreateDefaultSubobject<UBowComponent>("Bow Component");
 	Stamina = CreateDefaultSubobject<UStaminaComponent>(TEXT("Stamina"));
@@ -79,6 +79,8 @@ void ATwilightArcheryCharacter::BeginPlay()
 
 	DodgeCapsule->SetCapsuleHalfHeight(GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight());
 	DodgeCapsule->SetCapsuleRadius(GetCapsuleComponent()->GetUnscaledCapsuleRadius());
+	DodgeCapsule->SetWorldRotation(FRotator());
+	DodgeCapsule->SetRelativeLocation(FVector());
 
 	Stamina->InitPlayer(this);
 	Life->InitPlayer(this);
