@@ -4,8 +4,10 @@
 #include "Components/ActorComponent.h"
 #include "BowComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartChargeDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChargeDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChargeMaxDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCancelChargeDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShootDelegate);
 
 
@@ -26,9 +28,13 @@ public:
 		float maxChargeVelocityMultiplier = 1.f;
 
 	UPROPERTY(BlueprintAssignable)
+	FStartChargeDelegate startChargeDelegate;
+	UPROPERTY(BlueprintAssignable)
 	FChargeDelegate chargeDelegate;
 	UPROPERTY(BlueprintAssignable)
 	FChargeMaxDelegate chargeMaxDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FCancelChargeDelegate cancelChargeDelegate;
 	UPROPERTY(BlueprintAssignable)
 	FShootDelegate shootDelegate;
 

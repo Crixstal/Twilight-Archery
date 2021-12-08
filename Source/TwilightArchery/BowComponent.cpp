@@ -34,6 +34,8 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		if (timerCharge == maxChargeTime)
 		{
 			bIsMaxCharged = true;
+			chargeMaxDelegate.Broadcast();
+
 			return;
 		}
 
@@ -60,6 +62,8 @@ void UBowComponent::CancelAim()
 {
 	bIsCharging = false;
 	bHasToDrawArrow = false;
+
+	cancelChargeDelegate.Broadcast();
 }
 
 void UBowComponent::OnEndAiming()
@@ -74,6 +78,8 @@ void UBowComponent::StartCharging()
 	timerCharge = 0.f;
 	bIsCharging = true;
 	bHasToDrawArrow = false;
+
+	startChargeDelegate.Broadcast();
 }
 
 float map(float value, float istart, float istop, float ostart, float ostop) 
@@ -96,6 +102,8 @@ void UBowComponent::Shoot(FVector ShootDirection, FTransform ShootTransform)
 
 	AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ShootTransform);
 	arrow->Initialize(arrowVelocity);
+
+	shootDelegate.Broadcast();
 
 	Reload();
 }
