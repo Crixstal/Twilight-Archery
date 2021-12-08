@@ -373,7 +373,7 @@ void ATwilightArcheryCharacter::StopAiming()
 	// Shoot with bow
 	FVector shootDirection = aimHitLocation - ArrowBowMesh->GetComponentLocation();
 	shootDirection.Normalize();
-	BowComponent->Shoot(shootDirection, ArrowBowMesh->GetComponentTransform());
+	BowComponent->Shoot(this, shootDirection, ArrowBowMesh->GetComponentTransform());
 
 	//shootFX->Activate(true);
 

@@ -77,7 +77,7 @@ float map(float value, float istart, float istop, float ostart, float ostop)
 	return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 }
 
-void UBowComponent::Shoot(FVector ShootDirection, FTransform ShootTransform)
+void UBowComponent::Shoot(ATwilightArcheryCharacter* inPlayer, FVector ShootDirection, FTransform ShootTransform)
 {
 	bHasShoot = true;
 	bIsCharging = false;
@@ -91,7 +91,7 @@ void UBowComponent::Shoot(FVector ShootDirection, FTransform ShootTransform)
 	//UE_LOG(LogTemp, Warning, TEXT("Mult = %f"), timerCharge);
 
 	AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ShootTransform);
-	arrow->Initialize(arrowVelocity, GetRatio(0.5f, 1.f));
+	arrow->Initialize(inPlayer, arrowVelocity, GetRatio(0.5f, 1.f));
 
 	Reload();
 }

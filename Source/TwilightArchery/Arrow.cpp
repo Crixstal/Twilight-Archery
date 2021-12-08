@@ -4,6 +4,7 @@
 #include "Arrow.h"
 #include "BossCharacter.h"
 #include "LifeComponent.h"
+#include "TwilightArcheryCharacter.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 
@@ -37,12 +38,13 @@ void AArrow::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AArrow::Initialize(FVector velocity, float charge)
+void AArrow::Initialize(ATwilightArcheryCharacter* inPlayer, FVector velocity, float charge)
 {
 	ProjectileComponent->Velocity = velocity;
 	ProjectileComponent->bRotationFollowsVelocity = true;
 	ProjectileComponent->ProjectileGravityScale = 0.6;
 	damage *= charge;
+	player = inPlayer;
 }
 
 float AArrow::GetMultiplier(const FName& key, const TMap<FName, float>& multipliers)
@@ -68,6 +70,8 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 
 		float multiplier = GetMultiplier(OtherComp->ComponentTags.Last(), enemy->multipliers);
 		enemy->Life->LifeDown(damage * multiplier);
+
+		hitDelegate.Broadcast(damage * multiplier);
 
 		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
 	}

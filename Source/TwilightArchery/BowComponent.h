@@ -69,7 +69,8 @@ public:
 	void CancelAim();
 	void Reload();
 	void StartCharging();
-	void Shoot(FVector ShootDirection, FTransform ShootTransform);
+	void Shoot(class ATwilightArcheryCharacter* inPlayer, FVector ShootDirection, FTransform ShootTransform);
+	
 	float GetRatio();
 	float GetRatio(float min, float max);
 
