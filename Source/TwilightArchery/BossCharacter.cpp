@@ -132,7 +132,7 @@ void ABossCharacter::Raging()
 	if (cdRaging == 20)
 	{
 		damage = 20;
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		GetCharacterMovement()->MaxWalkSpeed = 800.f;
 		GEngine->AddOnScreenDebugMessage(1000000, 5.f, FColor::Red, FString::Printf(TEXT("Boss is in Rage")));
 		cdRaging--;
 	}
