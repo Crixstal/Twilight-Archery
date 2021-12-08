@@ -142,6 +142,7 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 				GEngine->AddOnScreenDebugMessage(-451, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
 				ATwilightArcheryCharacter* player = Cast<ATwilightArcheryCharacter>(OtherActor);
 				player->Life->LifeDown(10);
+				//player->OnHit();
 			}
 		}
 	}
@@ -184,7 +185,7 @@ void ABossCharacter::Attacking()
 			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		else if(timeBasAtt >= 1.78f && timeBasAtt <= 1.82f)
 			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		else if(timeBasAtt >= 3.33f)
+		else if(timeBasAtt >= 2.4f)
 			ABossCharacter::StopBasicAttack();
 
 		timeBasAtt += 0.1f;
@@ -196,7 +197,7 @@ void ABossCharacter::Attacking()
 			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		else if (timeHorAtt >= 1.48f && timeHorAtt <= 1.52f)
 			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		else if (timeHorAtt >= 2.f)
+		else if (timeHorAtt >= 1.6f)
 			ABossCharacter::StopHornAttack();
 
 		timeHorAtt += 0.1f;

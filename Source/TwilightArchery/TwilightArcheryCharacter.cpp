@@ -553,7 +553,6 @@ void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 		StopSprinting();
 
 	bIsHit = true;
-	Life->LifeDown(10);
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Hit Speed");
 

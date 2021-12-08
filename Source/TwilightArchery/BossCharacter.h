@@ -103,6 +103,8 @@ public:
 	bool isAttacking = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	bool isChasing = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
+	bool isRotating = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components Choose Rd Attack")
 		bool chooseRdAtt = true;
