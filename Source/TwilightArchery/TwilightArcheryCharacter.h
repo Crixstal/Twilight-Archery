@@ -115,16 +115,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Booleans")
 		bool bIsClimbing = false;
 
-	// _______________________SPEEDS PARAMETERS_____________________________
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
-		UAnimMontage* leftHitMontage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
-		UAnimMontage* rightHitMontage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
-		UAnimMontage* upHitMontage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Animation Montages")
-		UAnimMontage* downHitMontage;
-
 
 	UFUNCTION(BlueprintCallable)
 	void OnAimingEnd();

@@ -27,6 +27,8 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	UE_LOG(LogTemp, Warning, TEXT("Aim : %d | Charge : %d | Draw : %d | Time : %f"), bIsAiming, bIsCharging, bHasToDrawArrow, timerCharge);
+
 	if (bIsCharging && !bIsMaxCharged)
 	{
 		if (timerCharge == maxChargeTime)
@@ -48,6 +50,7 @@ void UBowComponent::OnStartAiming()
 	bIsAiming = true;
 	bIsCharging = false;
 	bShouldAim = false;
+	bIsMaxCharged = false;
 
 	if (!bHasToDrawArrow)
 		StartCharging();
@@ -56,6 +59,7 @@ void UBowComponent::OnStartAiming()
 void UBowComponent::CancelAim()
 {
 	bIsCharging = false;
+	bHasToDrawArrow = false;
 }
 
 void UBowComponent::OnEndAiming()

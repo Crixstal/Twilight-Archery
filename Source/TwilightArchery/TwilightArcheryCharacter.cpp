@@ -92,7 +92,7 @@ void ATwilightArcheryCharacter::Tick(float DeltaTime)
 
 	UpdateCameraBoom();
 
-	UE_LOG(LogTemp, Warning, TEXT("Walk Speed : %f"), GetCharacterMovement()->MaxWalkSpeed);
+	//UE_LOG(LogTemp, Warning, TEXT("Walk Speed : %f"), GetCharacterMovement()->MaxWalkSpeed);
 
 	if (bIsDodging)
 	{
