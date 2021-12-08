@@ -538,7 +538,7 @@ void ATwilightArcheryCharacter::DebugLifeUp()
 	Life->LifeUp(1);
 }
 
-void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
+void ATwilightArcheryCharacter::OnHit(const FVector& Normal)
 {
 	if (Life->bIsInvincible) return;
 
@@ -555,20 +555,19 @@ void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 		StopSprinting();
 
 	bIsHit = true;
-	Life->LifeDown(10);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Hit Speed");
 
 	GetCharacterMovement()->MaxWalkSpeed = hitWalkSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	FVector actorForward = GetActorForwardVector();
-	FVector normalHit = Hit.Normal;
+	FVector normalHit = Normal;
 	normalHit.Z = 0.f;
 
 	if (normalHit.Equals(FVector::ZeroVector, 0.001f))
 	{
 		hitDirection = FVector(0.f, 1.f, 0.f);
+		onHitEvent.Broadcast();
+
 		return;
 	}
 
@@ -593,6 +592,8 @@ void ATwilightArcheryCharacter::OnHit(const FHitResult& Hit)
 		hitDirection = FVector(0.f, -1.f, 0.f);
 		lastControlDirection = actorForward;
 	}
+
+	onHitEvent.Broadcast();
 }
 
 void ATwilightArcheryCharacter::OnEndHit()

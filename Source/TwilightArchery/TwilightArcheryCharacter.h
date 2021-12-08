@@ -10,6 +10,7 @@
 #include "TwilightArcheryCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPauseEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHitEvent);
 
 UCLASS(config=Game)
 class ATwilightArcheryCharacter : public ACharacter
@@ -21,6 +22,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Delegate")
 	FPauseEvent pauseEvent;
+	UPROPERTY(BlueprintAssignable, Category = "Delegate")
+	FHitEvent onHitEvent;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
@@ -136,7 +139,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlaceArrowOnBow();
 	UFUNCTION(BlueprintCallable)
-	void OnHit(const FHitResult& Hit);
+	void OnHit(const FVector& Normal);
 	UFUNCTION(BlueprintCallable)
 	void OnEndHit();
 
