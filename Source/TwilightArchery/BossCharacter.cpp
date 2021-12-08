@@ -203,35 +203,47 @@ void ABossCharacter::Attacking()
 	}
 	else if (basicAttack == true)
 	{
-		if (timeBasAtt >= 1.28f && timeBasAtt <= 1.32f)
-			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		else if(timeBasAtt >= 1.78f && timeBasAtt <= 1.82f)
-			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		else if(timeBasAtt >= 3.33f)
-			ABossCharacter::StopBasicAttack();
-		else if (timeBasAtt >= 0.68f && timeBasAtt <= 0.72f && isInRage)
-			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		else if (timeBasAtt >= 0.98f && timeBasAtt <= 1.02f && isInRage)
-			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		else if (timeBasAtt >= 1.82F && isInRage)
-			ABossCharacter::StopBasicAttack();
+		if (isInRage)
+		{
+			if (timeBasAtt >= 0.68f && timeBasAtt <= 0.72f)
+				hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			else if (timeBasAtt >= 0.98f && timeBasAtt <= 1.02f)
+				hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			else if (timeBasAtt >= 1.82F)
+				ABossCharacter::StopBasicAttack();
+		}
+		else
+		{
+			if (timeBasAtt >= 1.28f && timeBasAtt <= 1.32f)
+				hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			else if (timeBasAtt >= 1.78f && timeBasAtt <= 1.82f)
+				hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			else if (timeBasAtt >= 3.33f)
+				ABossCharacter::StopBasicAttack();
+		}
 
 		timeBasAtt += 0.1f;
 	}
 	else if (hornAttack == true)
 	{
-		if (timeHorAtt >= 0.58f && timeHorAtt <= 0.62f)
-			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		else if (timeHorAtt >= 1.48f && timeHorAtt <= 1.52f)
-			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		else if (timeHorAtt >= 2.f)
-			ABossCharacter::StopHornAttack();
-		else if (timeHorAtt >= 0.28f && timeHorAtt <= 0.32f && isInRage)
-			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		else if (timeHorAtt >= 0.78f && timeHorAtt <= 0.82f && isInRage)
-			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		else if (timeHorAtt >= 1.02F && isInRage)
-			ABossCharacter::StopHornAttack();
+		if (isInRage)
+		{
+			if (timeHorAtt >= 0.28f && timeHorAtt <= 0.32f)
+				hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			else if (timeHorAtt >= 0.78f && timeHorAtt <= 0.82f)
+				hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			else if (timeHorAtt >= 1.02F)
+				ABossCharacter::StopHornAttack();
+		}
+		else
+		{
+			if (timeHorAtt >= 0.58f && timeHorAtt <= 0.62f)
+				hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			else if (timeHorAtt >= 1.48f && timeHorAtt <= 1.52f)
+				hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			else if (timeHorAtt >= 2.f)
+				ABossCharacter::StopHornAttack();
+		}
 
 		timeHorAtt += 0.1f;
 	}
