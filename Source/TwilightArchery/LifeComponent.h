@@ -22,13 +22,13 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	class ATwilightArcheryCharacter* player;
+	class AActor* selfActor;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void InitPlayer(ATwilightArcheryCharacter* inPlayer);
+	void InitActor(AActor* inActor);
 
 	UFUNCTION(BlueprintCallable)
 	void LifeDown(int value = 1);

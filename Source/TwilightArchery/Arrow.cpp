@@ -3,6 +3,7 @@
 
 #include "Arrow.h"
 #include "BossCharacter.h"
+#include "LifeComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 
@@ -47,11 +48,15 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 {
 	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	if (Cast<ABossCharacter>(OtherActor))
+		GEngine->AddOnScreenDebugMessage(-864, 5.f, FColor::Emerald, "ArrowHit");
+	if (OtherActor->ActorHasTag(TEXT("Enemy")))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "ArrowHit");
+		GEngine->AddOnScreenDebugMessage(78663, 5.f, FColor::Emerald, OtherActor->GetName());
+		GEngine->AddOnScreenDebugMessage(78663, 5.f, FColor::Emerald, OtherComp->GetName());
+		//TODO: Send to enemy what body part was hit to calculate damage res
+		ABossCharacter* enemy = Cast<ABossCharacter>(OtherActor);
+		enemy->Life->LifeDown(10);
 	}
 
 	//ProjectileComponent->DestroyComponent();
 }
-

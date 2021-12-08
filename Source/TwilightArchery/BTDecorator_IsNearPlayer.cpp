@@ -18,7 +18,7 @@ bool UBTDecorator_IsNearPlayer::CalculateRawConditionValue(UBehaviorTreeComponen
 
 	float distancePlayerEnemy = FVector::Dist(npc->GetActorLocation(), npc->target->GetActorLocation());
 	
-	if ((distancePlayerEnemy <= 450 && !npc->isAttacking) || npc->isAttacking )
+	if ((distancePlayerEnemy <= 500 && !npc->isAttacking) || npc->isAttacking )
 	{
 		return false;
 	}

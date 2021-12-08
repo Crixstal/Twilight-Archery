@@ -83,7 +83,7 @@ void ATwilightArcheryCharacter::BeginPlay()
 	DodgeCapsule->SetRelativeLocation(FVector());
 
 	Stamina->InitPlayer(this);
-	Life->InitPlayer(this);
+	Life->InitActor(this);
 }
 
 void ATwilightArcheryCharacter::Tick(float DeltaTime)
