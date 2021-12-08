@@ -37,11 +37,12 @@ void AArrow::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AArrow::Initialize(FVector velocity)
+void AArrow::Initialize(FVector velocity, float charge)
 {
 	ProjectileComponent->Velocity = velocity;
 	ProjectileComponent->bRotationFollowsVelocity = true;
 	ProjectileComponent->ProjectileGravityScale = 0.6;
+	damage *= charge;
 }
 
 float AArrow::GetMultiplier(const FName& key, const TMap<FName, float>& multipliers)

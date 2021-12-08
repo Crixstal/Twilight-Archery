@@ -91,7 +91,7 @@ void UBowComponent::Shoot(FVector ShootDirection, FTransform ShootTransform)
 	//UE_LOG(LogTemp, Warning, TEXT("Mult = %f"), timerCharge);
 
 	AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ShootTransform);
-	arrow->Initialize(arrowVelocity);
+	arrow->Initialize(arrowVelocity, GetRatio(0.5f, 1.f));
 
 	Reload();
 }
@@ -122,4 +122,16 @@ float UBowComponent::GetCurrentChargeTime()
 bool UBowComponent::CanEndAiming()
 {
 	return bIsAiming; //&& !bShouldAim;
+}
+
+float UBowComponent::GetRatio()
+{
+	return timerCharge / maxChargeTime;
+}
+
+float UBowComponent::GetRatio(float min, float max)
+{
+	float range = max - min;
+
+	return min + (timerCharge / maxChargeTime) * range;
 }

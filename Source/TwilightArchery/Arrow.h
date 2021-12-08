@@ -28,7 +28,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	void Initialize(FVector velocity);
+	void Initialize(FVector velocity, float charge = 1.f);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

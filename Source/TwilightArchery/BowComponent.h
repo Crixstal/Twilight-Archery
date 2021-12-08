@@ -70,6 +70,8 @@ public:
 	void Reload();
 	void StartCharging();
 	void Shoot(FVector ShootDirection, FTransform ShootTransform);
+	float GetRatio();
+	float GetRatio(float min, float max);
 
 	//void Lock();
 	//void Unlock();
