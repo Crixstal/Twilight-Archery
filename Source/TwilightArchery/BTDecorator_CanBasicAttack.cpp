@@ -7,7 +7,7 @@
 
 UBTDecorator_CanBasicAttack::UBTDecorator_CanBasicAttack(FObjectInitializer const& object_initializer)
 {
-	NodeName = TEXT("Can Launch Zone Attacj");
+	NodeName = TEXT("Can Launch Zone Attack");
 }
 
 bool UBTDecorator_CanBasicAttack::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const

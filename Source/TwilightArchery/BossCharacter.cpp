@@ -247,6 +247,14 @@ void ABossCharacter::Attacking()
 
 		timeHorAtt += 0.1f;
 	}
+	else if (rockAttack == true)
+	{
+		if (timeRockAtt >= 4.f)
+			ABossCharacter::StopRockAttack();
+
+		timeRockAtt += 0.1f;
+		UE_LOG(LogActor, Warning, TEXT("Timer rock: %f"), timeRockAtt);
+	}
 }
 
 void ABossCharacter::ZoneAttack()
@@ -317,4 +325,27 @@ void ABossCharacter::StopBasicAttack()
 	timeBasAtt = 0.f;
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
 
+}
+
+void ABossCharacter::RockAttack()
+{
+	GEngine->AddOnScreenDebugMessage(-451, 5.f, FColor::Red, FString::Printf(TEXT("begin rock attack")));
+
+	isAttacking = true;
+	rockAttack = true;
+	GetWorldTimerManager().SetTimer(AttRock, this, &ABossCharacter::Attacking, 0.1f, true);
+	FVector FacingVector = { target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0 };
+	FRotator FacingRotator = FacingVector.Rotation();
+	SetActorRotation(FacingRotator, ETeleportType::None);
+	rockAttackEvent.Broadcast();
+}
+
+void ABossCharacter::StopRockAttack()
+{
+	GetWorldTimerManager().ClearTimer(AttRock);
+	isAttacking = false;
+	rockAttack = false;
+	isChasing = false;
+	chooseRdAtt = true;
+	timeRockAtt = 0.f;
 }
