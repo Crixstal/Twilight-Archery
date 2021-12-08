@@ -149,9 +149,6 @@ public:
 		FTimerHandle AttHorn;
 
 	//RockAttack
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components RockAttack")
-			class UBoxComponent* hitBoxRockAttack;
-
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boolean Rock Attack")
 			bool rockAttack = false;
 
