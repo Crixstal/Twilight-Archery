@@ -52,7 +52,6 @@ EBTNodeResult::Type UBTTask_RandomiseBehavior::ExecuteTask(UBehaviorTreeComponen
 		while (value == 0)
 		{
 			incr = FMath::RandRange(1, numberOfScript * 3);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ET NON PAS CELLE LA")));
 			value = values[incr - 1];
 		}
 
@@ -76,13 +75,6 @@ EBTNodeResult::Type UBTTask_RandomiseBehavior::ExecuteTask(UBehaviorTreeComponen
 			values[value * 3 - 1] = 0;
 		}
 	}
-
-
-	for(int i = 0; i < values.size(); i++)
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::Printf(TEXT("Values: %d"), values[i]));
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Prepreviousvalue = %d"), prepreviousValue));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Previousvalue = %d"), previousValue));
 
 	npc->selectedAttack = value;
 	npc->chooseRdAtt = false;

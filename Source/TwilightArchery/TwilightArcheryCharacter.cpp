@@ -81,7 +81,7 @@ void ATwilightArcheryCharacter::BeginPlay()
 	DodgeCapsule->SetCapsuleRadius(GetCapsuleComponent()->GetUnscaledCapsuleRadius());
 
 	Stamina->InitPlayer(this);
-	Life->InitPlayer(this);
+	Life->InitActor(this);
 }
 
 void ATwilightArcheryCharacter::Tick(float DeltaTime)

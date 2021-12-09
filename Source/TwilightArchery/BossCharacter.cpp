@@ -3,6 +3,7 @@
 
 #include "BossCharacter.h"
 #include "LifeComponent.h"
+#include "TwilightArcheryCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -66,6 +67,9 @@ ABossCharacter::ABossCharacter()
 	
 	Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
 
+	Life->maxLife = 250;
+	Life->currentLife = Life->maxLife;
+	damage = 10;
 }
 
 // Called when the game starts or when spawned
@@ -105,6 +109,49 @@ void ABossCharacter::BeginPlay()
 	}
 
 	GetCharacterMovement()->MaxWalkSpeed = 330.f;
+
+	Life->InitActor(this);
+	Life->deathEvent.AddDynamic(this, &ABossCharacter::OnBossDeath);
+	Life->healthUpdate.AddDynamic(this, &ABossCharacter::OnBossTakeHit);
+
+}
+
+void ABossCharacter::OnBossTakeHit()
+{
+	GEngine->AddOnScreenDebugMessage(-10, 5.f, FColor::Red, FString::Printf(TEXT("Boss take hit")));
+
+	if (Life->currentLife <= (Life->maxLife * 0.7) && !isInRage && cdRaging == 20)
+	{
+		isInRage = true;
+		GetWorldTimerManager().SetTimer(TimerHandleRage, this, &ABossCharacter::Raging, 1.f, true);
+	}
+}
+
+void ABossCharacter::Raging()
+{
+	if (cdRaging == 20)
+	{
+		damage = 20;
+		GetCharacterMovement()->MaxWalkSpeed = 800.f;
+		GEngine->AddOnScreenDebugMessage(1000000, 5.f, FColor::Red, FString::Printf(TEXT("Boss is in Rage")));
+		cdRaging--;
+	}
+	else if (cdRaging == 0)
+	{
+		isInRage = false;
+		damage = 10;
+		GetCharacterMovement()->MaxWalkSpeed = 330.f;
+		GEngine->AddOnScreenDebugMessage(1000000, 5.f, FColor::Red, FString::Printf(TEXT("Boss is not anymore in Rage")));
+		GetWorldTimerManager().ClearTimer(TimerHandleKFOT);
+	}
+	else
+		cdRaging--;
+}
+
+void ABossCharacter::OnBossDeath()
+{
+	GEngine->AddOnScreenDebugMessage(-245, 5.f, FColor::Red, FString::Printf(TEXT("Boss ded")));
+
 }
 
 // Called every frame
@@ -119,9 +166,11 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 	{
 		if (OtherActor->Tags.Num() > 0)
 		{
-			if (OtherComp->GetName() == "CollisionCylinder" && OtherActor->Tags[0] == "Player")
+			if (OtherActor->ActorHasTag(TEXT("Player")))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
+				GEngine->AddOnScreenDebugMessage(-451, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
+				ATwilightArcheryCharacter* player = Cast<ATwilightArcheryCharacter>(OtherActor);
+				player->Life->LifeDown(damage);
 			}
 		}
 	}
@@ -130,14 +179,9 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 void ABossCharacter::KeepFocusOnTarget()
 {
 	if (focustime > 0)
-	{
 		focustime -= 1.f;
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("-1 seconde")));
-
-	}
 	else
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, FString::Printf(TEXT("EndCoolDown")));
 		haveATarget = false;
 		GetWorldTimerManager().ClearTimer(TimerHandleKFOT);
 	}
@@ -156,31 +200,52 @@ void ABossCharacter::Attacking()
 		}
 
 		timeZonAtt += 0.1f;
-		UE_LOG(LogActor, Warning, TEXT("Timer Zone: %f"), timeZonAtt);
 	}
 	else if (basicAttack == true)
 	{
-		if (timeBasAtt >= 1.28f && timeBasAtt <= 1.32f)
-			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		else if(timeBasAtt >= 1.78f && timeBasAtt <= 1.82f)
-			hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		else if(timeBasAtt >= 3.33f)
-			ABossCharacter::StopBasicAttack();
+		if (isInRage)
+		{
+			if (timeBasAtt >= 0.68f && timeBasAtt <= 0.72f)
+				hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			else if (timeBasAtt >= 0.98f && timeBasAtt <= 1.02f)
+				hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			else if (timeBasAtt >= 1.82F)
+				ABossCharacter::StopBasicAttack();
+		}
+		else
+		{
+			if (timeBasAtt >= 1.28f && timeBasAtt <= 1.32f)
+				hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			else if (timeBasAtt >= 1.78f && timeBasAtt <= 1.82f)
+				hitBoxBasicAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			else if (timeBasAtt >= 3.33f)
+				ABossCharacter::StopBasicAttack();
+		}
 
 		timeBasAtt += 0.1f;
-		UE_LOG(LogActor, Warning, TEXT("Timer Basic: %f"), timeBasAtt);
 	}
 	else if (hornAttack == true)
 	{
-		if (timeHorAtt >= 0.58f && timeHorAtt <= 0.62f)
-			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		else if (timeHorAtt >= 1.48f && timeHorAtt <= 1.52f)
-			hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		else if (timeHorAtt >= 2.f)
-			ABossCharacter::StopHornAttack();
+		if (isInRage)
+		{
+			if (timeHorAtt >= 0.28f && timeHorAtt <= 0.32f)
+				hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			else if (timeHorAtt >= 0.78f && timeHorAtt <= 0.82f)
+				hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			else if (timeHorAtt >= 1.02F)
+				ABossCharacter::StopHornAttack();
+		}
+		else
+		{
+			if (timeHorAtt >= 0.58f && timeHorAtt <= 0.62f)
+				hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			else if (timeHorAtt >= 1.48f && timeHorAtt <= 1.52f)
+				hitBoxHornAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			else if (timeHorAtt >= 2.f)
+				ABossCharacter::StopHornAttack();
+		}
 
 		timeHorAtt += 0.1f;
-		UE_LOG(LogActor, Warning, TEXT("Timer horn: %f"), timeHorAtt);
 	}
 }
 
