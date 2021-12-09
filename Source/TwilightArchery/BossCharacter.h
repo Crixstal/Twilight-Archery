@@ -83,6 +83,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components RightFrontArmBox")
 		class UBoxComponent* hitBoxRightFrontArm;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
+		TMap<FName, float> multipliers;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Target")
 	AActor* target;
 	bool haveATarget = false;
@@ -105,6 +108,8 @@ public:
 	bool isAttacking = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	bool isChasing = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
+	bool isRotating = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	bool isInRage = false;
 

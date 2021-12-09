@@ -4,6 +4,7 @@
 #include "Arrow.h"
 #include "BossCharacter.h"
 #include "LifeComponent.h"
+#include "TwilightArcheryCharacter.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 
@@ -37,11 +38,23 @@ void AArrow::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AArrow::Initialize(FVector velocity)
+void AArrow::Initialize(ATwilightArcheryCharacter* inPlayer, FVector velocity, float charge)
 {
 	ProjectileComponent->Velocity = velocity;
 	ProjectileComponent->bRotationFollowsVelocity = true;
 	ProjectileComponent->ProjectileGravityScale = 0.6;
+	damage *= charge;
+	player = inPlayer;
+}
+
+float AArrow::GetMultiplier(const FName& key, const TMap<FName, float>& multipliers)
+{
+	const float* value = multipliers.Find(key);
+
+	if (value != nullptr)
+		return *value;
+	else
+		return 1.f;
 }
 
 void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -52,11 +65,16 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 	if (OtherActor->ActorHasTag(TEXT("Enemy")))
 	{
 		GEngine->AddOnScreenDebugMessage(78663, 5.f, FColor::Emerald, OtherActor->GetName());
-		GEngine->AddOnScreenDebugMessage(78663, 5.f, FColor::Emerald, OtherComp->GetName());
-		//TODO: Send to enemy what body part was hit to calculate damage res
+		
 		ABossCharacter* enemy = Cast<ABossCharacter>(OtherActor);
-		enemy->Life->LifeDown(10);
-	}
 
+		float multiplier = GetMultiplier(OtherComp->ComponentTags.Last(), enemy->multipliers);
+		enemy->Life->LifeDown(damage * multiplier);
+
+		hitDelegate.Broadcast(damage * multiplier);
+
+		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
+	}
+	//CapsuleComponent->DestroyComponent();
 	//ProjectileComponent->DestroyComponent();
 }

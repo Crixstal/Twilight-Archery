@@ -375,7 +375,7 @@ void ATwilightArcheryCharacter::StopAiming()
 	// Shoot with bow
 	FVector shootDirection = aimHitLocation - ArrowBowMesh->GetComponentLocation();
 	shootDirection.Normalize();
-	BowComponent->Shoot(shootDirection, ArrowBowMesh->GetComponentTransform());
+	BowComponent->Shoot(this, shootDirection, ArrowBowMesh->GetComponentTransform());
 
 	//shootFX->Activate(true);
 
@@ -555,6 +555,8 @@ void ATwilightArcheryCharacter::OnHit(const FVector& Normal)
 		StopSprinting();
 
 	bIsHit = true;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Hit Speed");
 
 	GetCharacterMovement()->MaxWalkSpeed = hitWalkSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
