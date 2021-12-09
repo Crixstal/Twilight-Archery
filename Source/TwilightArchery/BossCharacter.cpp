@@ -4,6 +4,7 @@
 #include "BossCharacter.h"
 #include "LifeComponent.h"
 #include "TwilightArcheryCharacter.h"
+#include "BossAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -350,4 +351,14 @@ void ABossCharacter::StopRockAttack()
 	isChasing = false;
 	chooseRdAtt = true;
 	timeRockAtt = 0.f;
+}
+
+
+void ABossCharacter::OnDeath()
+{
+	Cast<ABossAIController>(GetController())->OnDeath();
+
+	bIsDead = true;
+
+	GetCharacterMovement()->StopMovementImmediately();
 }

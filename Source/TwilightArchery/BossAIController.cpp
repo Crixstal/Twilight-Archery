@@ -28,6 +28,11 @@ void ABossAIController::BeginPlay()
 	blackboard->SetValueAsObject(TEXT("SelfActor"), Boss);
 	blackboard->SetValueAsInt(TEXT("NumberOfScript"), 2);
 	blackboard->SetValueAsBool(TEXT("ChooseRandomAtt"), true);
+	blackboard->SetValueAsBool(TEXT("IsAlive"), true);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Compile Succeed")));
 }
 
+void ABossAIController::OnDeath()
+{
+	blackboard->SetValueAsBool(TEXT("IsAlive"), false);
+}

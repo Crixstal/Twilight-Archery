@@ -259,6 +259,8 @@ void ATwilightArcheryCharacter::StartDodge()
 	bIsDodging = true;
 	SetInvincible(true);
 
+	dodgeEvent.Broadcast();
+
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Dodge Speed");
 
 	GetCharacterMovement()->MaxWalkSpeed = dodgeSpeed;
@@ -446,6 +448,8 @@ void ATwilightArcheryCharacter::OnJump()
 {
 	if (!CanJump()) return;
 
+	jumpEvent.Broadcast();
+
 	Jump();
 	bIsJumping = true;
 
@@ -508,22 +512,22 @@ void ATwilightArcheryCharacter::SetLastControlDirection()
 
 bool ATwilightArcheryCharacter::CanSprint()
 {
-	return !(GetCharacterMovement()->IsFalling() || BowComponent->bIsAiming || bIsDodging || bIsHit || bIsClimbing);
+	return !(GetCharacterMovement()->IsFalling() || BowComponent->bIsAiming || bIsDodging || bIsHit || bIsClimbing || bIsDead);
 }
 
 bool ATwilightArcheryCharacter::CanDodge()
 {
-	return !(GetCharacterMovement()->IsFalling() || bIsHit || Stamina->currentStamina < Stamina->dodgeDrain || bIsClimbing);
+	return !(GetCharacterMovement()->IsFalling() || bIsHit || Stamina->currentStamina < Stamina->dodgeDrain || bIsClimbing || bIsDead);
 }
 
 bool ATwilightArcheryCharacter::CanJump()
 {
-	return !(BowComponent->bIsAiming || bIsDodging || Stamina->currentStamina < Stamina->jumpDrain || bIsHit || bIsClimbing);
+	return !(BowComponent->bIsAiming || bIsDodging || Stamina->currentStamina < Stamina->jumpDrain || bIsHit || bIsClimbing || bIsDead);
 }
 
 bool ATwilightArcheryCharacter::CanAim()
 {
-	return BowComponent->CanShoot() && !bIsHit && Stamina->currentStamina >= Stamina->aimDrain && !bIsClimbing;
+	return BowComponent->CanShoot() && !bIsHit && Stamina->currentStamina >= Stamina->aimDrain && !bIsClimbing && !bIsDead;
 }
 
 void ATwilightArcheryCharacter::DebugLifeDown()
@@ -540,7 +544,7 @@ void ATwilightArcheryCharacter::DebugLifeUp()
 
 void ATwilightArcheryCharacter::OnHit(const FVector& Normal)
 {
-	if (Life->bIsInvincible) return;
+	if (Life->bIsInvincible || bIsDead) return;
 
 	if (BowComponent->bIsAiming)
 	{

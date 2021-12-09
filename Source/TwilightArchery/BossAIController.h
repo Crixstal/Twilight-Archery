@@ -36,4 +36,6 @@ protected:
 
 public:
 
+	void OnDeath();
+
 };

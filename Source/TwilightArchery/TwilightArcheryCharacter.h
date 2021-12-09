@@ -11,6 +11,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPauseEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHitEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDodgevent);
 
 UCLASS(config=Game)
 class ATwilightArcheryCharacter : public ACharacter
@@ -24,6 +26,10 @@ public:
 	FPauseEvent pauseEvent;
 	UPROPERTY(BlueprintAssignable, Category = "Delegate")
 	FHitEvent onHitEvent;
+	UPROPERTY(BlueprintAssignable, Category = "Delegate")
+	FJumpEvent jumpEvent;
+	UPROPERTY(BlueprintAssignable, Category = "Delegate")
+	FDodgevent dodgeEvent;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelfParameters\|Components", meta = (AllowPrivateAccess = "true"))
@@ -114,7 +120,8 @@ public:
 		bool bIsJumping = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Booleans")
 		bool bIsClimbing = false;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Booleans")
+		bool bIsDead = false;
 
 	UFUNCTION(BlueprintCallable)
 	void OnAimingEnd();

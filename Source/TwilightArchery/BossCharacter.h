@@ -32,6 +32,9 @@ public:
 	UFUNCTION()
 		void OnBossTakeHit();
 
+	UFUNCTION(BlueprintCallable)
+		void OnDeath();
+
 	UFUNCTION()
 		void OnBossDeath();
 
@@ -112,6 +115,9 @@ public:
 	bool isRotating = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters")
 	bool isInRage = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SelfParameters\|Booleans")
+	bool bIsDead = false;
 
 	FTimerHandle TimerHandleRage;
 	void Raging();
