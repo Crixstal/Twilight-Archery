@@ -31,7 +31,7 @@ EBTNodeResult::Type UBTTask_GetTarget::ExecuteTask(UBehaviorTreeComponent& Owner
 		for (int i = 0; i < npc->Players.Num(); i++)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Possible target is %f %f %f"), npc->Players[i]->GetPawn()->GetActorLocation().X, npc->Players[i]->GetPawn()->GetActorLocation().Y, npc->Players[i]->GetPawn()->GetActorLocation().Z));
-			
+			if (npc->Players[i]->GetPawn() == nullptr) continue;
 			FVector savePos = npc->Players[i]->GetPawn()->GetActorLocation();
 			if (FVector::Dist(savePos, npc->GetActorLocation()) < minDist || minDist == -1)
 			{

@@ -61,7 +61,11 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 {
 	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		GEngine->AddOnScreenDebugMessage(-864, 5.f, FColor::Emerald, "ArrowHit");
+	GEngine->AddOnScreenDebugMessage(-864, 5.f, FColor::Emerald, "ArrowHit");
+
+	bool hasHitEnemy = false;
+	int damages = 0;
+
 	if (OtherActor->ActorHasTag(TEXT("Enemy")))
 	{
 		GEngine->AddOnScreenDebugMessage(78663, 5.f, FColor::Emerald, OtherActor->GetName());
@@ -69,12 +73,17 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 		ABossCharacter* enemy = Cast<ABossCharacter>(OtherActor);
 
 		float multiplier = GetMultiplier(OtherComp->ComponentTags.Last(), enemy->multipliers);
-		enemy->Life->LifeDown(damage * multiplier);
 
-		hitDelegate.Broadcast(damage * multiplier);
+		damages = damage * multiplier;
+		hasHitEnemy = true;
+		enemy->Life->LifeDown(damages);
+
 
 		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
 	}
+
+	hitDelegate.Broadcast(hasHitEnemy, damages);
+
 	//CapsuleComponent->DestroyComponent();
 	//ProjectileComponent->DestroyComponent();
 }

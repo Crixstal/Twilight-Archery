@@ -171,6 +171,8 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 				GEngine->AddOnScreenDebugMessage(-451, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
 				ATwilightArcheryCharacter* player = Cast<ATwilightArcheryCharacter>(OtherActor);
 				player->Life->LifeDown(damage);
+				FVector normal = GetActorLocation() - player->GetActorLocation();
+				player->OnHit(normal);
 			}
 		}
 	}
@@ -348,5 +350,4 @@ void ABossCharacter::StopRockAttack()
 	isChasing = false;
 	chooseRdAtt = true;
 	timeRockAtt = 0.f;
-}
 }

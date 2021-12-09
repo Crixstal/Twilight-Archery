@@ -556,6 +556,8 @@ void ATwilightArcheryCharacter::OnHit(const FVector& Normal)
 
 	bIsHit = true;
 
+	Life->SetInvincibility(true, 0.f, true);
+
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Hit Speed");
 
 	GetCharacterMovement()->MaxWalkSpeed = hitWalkSpeed;
@@ -564,6 +566,7 @@ void ATwilightArcheryCharacter::OnHit(const FVector& Normal)
 	FVector actorForward = GetActorForwardVector();
 	FVector normalHit = Normal;
 	normalHit.Z = 0.f;
+	normalHit.Normalize();
 
 	if (normalHit.Equals(FVector::ZeroVector, 0.001f))
 	{
@@ -601,7 +604,6 @@ void ATwilightArcheryCharacter::OnHit(const FVector& Normal)
 void ATwilightArcheryCharacter::OnEndHit()
 {
 	bIsHit = false;
-
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "End hit Speed");
 

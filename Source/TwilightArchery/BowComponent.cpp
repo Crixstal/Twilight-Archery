@@ -27,7 +27,7 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UE_LOG(LogTemp, Warning, TEXT("Aim : %d | Charge : %d | Draw : %d | Time : %f"), bIsAiming, bIsCharging, bHasToDrawArrow, timerCharge);
+	//UE_LOG(LogTemp, Warning, TEXT("Aim : %d | Charge : %d | Draw : %d | Time : %f"), bIsAiming, bIsCharging, bHasToDrawArrow, timerCharge);
 
 	if (bIsCharging && !bIsMaxCharged)
 	{

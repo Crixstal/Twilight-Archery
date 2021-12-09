@@ -16,6 +16,8 @@ ULifeComponent::ULifeComponent()
 void ULifeComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Warning, TEXT("Invincible : %d"), bIsInvincible);
 }
 
 // Called every frame
@@ -23,7 +25,7 @@ void ULifeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//UE_LOG(LogTemp, Warning, TEXT("Invincibility : %d"), bIsInvincible);
+	UE_LOG(LogTemp, Warning, TEXT("Invincibility : %d"), bIsInvincible);
 
 	if (bIsInvincible)
 	{

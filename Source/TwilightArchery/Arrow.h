@@ -7,7 +7,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Arrow.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitDelegate, int, damage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHitDelegate, bool, hasHitEnemy, int, damage);
 
 UCLASS()
 class TWILIGHTARCHERY_API AArrow : public AActor
