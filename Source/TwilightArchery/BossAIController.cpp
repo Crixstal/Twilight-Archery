@@ -26,7 +26,7 @@ void ABossAIController::BeginPlay()
 	behaviorComp->StartTree(*behaviorTree, EBTExecutionMode::Looped);
 	ABossCharacter* Boss = Cast<ABossCharacter>(GetPawn());
 	blackboard->SetValueAsObject(TEXT("SelfActor"), Boss);
-	blackboard->SetValueAsInt(TEXT("NumberOfScript"), 3);
+	blackboard->SetValueAsInt(TEXT("NumberOfScript"), 2);
 	blackboard->SetValueAsBool(TEXT("ChooseRandomAtt"), true);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Compile Succeed")));
 }
