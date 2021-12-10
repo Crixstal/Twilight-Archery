@@ -68,9 +68,9 @@ ABossCharacter::ABossCharacter()
 	
 	Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
 
-	Life->maxLife = 250;
+	Life->maxLife = 1000;
 	Life->currentLife = Life->maxLife;
-	damage = 10;
+	damage = 25;
 }
 
 // Called when the game starts or when spawned
@@ -109,7 +109,7 @@ void ABossCharacter::BeginPlay()
 		Players.Add(pl);
 	}
 
-	GetCharacterMovement()->MaxWalkSpeed = 330.f;
+	GetCharacterMovement()->MaxWalkSpeed = 400.f;
 
 	Life->InitActor(this);
 	Life->deathEvent.AddDynamic(this, &ABossCharacter::OnBossDeath);
@@ -119,9 +119,12 @@ void ABossCharacter::BeginPlay()
 
 void ABossCharacter::OnBossTakeHit()
 {
-	GEngine->AddOnScreenDebugMessage(-10, 5.f, FColor::Red, FString::Printf(TEXT("Boss take hit")));
 
-	if (Life->currentLife <= (Life->maxLife * 0.7) && !isInRage && cdRaging == 20)
+	if (
+		(Life->currentLife <= (Life->maxLife * 0.3)
+		|| (Life->currentLife <= (Life->maxLife * 0.7) && Life->currentLife >= (Life->maxLife * 0.65))
+		|| (Life->currentLife <= (Life->maxLife * 0.5) && Life->currentLife >= (Life->maxLife * 0.45)))
+		&& !isInRage && cdRaging == 40)
 	{
 		isInRage = true;
 		GetWorldTimerManager().SetTimer(TimerHandleRage, this, &ABossCharacter::Raging, 1.f, true);
@@ -130,19 +133,18 @@ void ABossCharacter::OnBossTakeHit()
 
 void ABossCharacter::Raging()
 {
-	if (cdRaging == 20)
+	if (cdRaging == 40)
 	{
-		damage = 20;
+		damage = damage * 2;
 		GetCharacterMovement()->MaxWalkSpeed = 800.f;
-		GEngine->AddOnScreenDebugMessage(1000000, 5.f, FColor::Red, FString::Printf(TEXT("Boss is in Rage")));
 		cdRaging--;
 	}
 	else if (cdRaging == 0)
 	{
 		isInRage = false;
-		damage = 10;
+		damage = damage/2;
+		cdRaging = 40;
 		GetCharacterMovement()->MaxWalkSpeed = 330.f;
-		GEngine->AddOnScreenDebugMessage(1000000, 5.f, FColor::Red, FString::Printf(TEXT("Boss is not anymore in Rage")));
 		GetWorldTimerManager().ClearTimer(TimerHandleKFOT);
 	}
 	else
@@ -151,7 +153,6 @@ void ABossCharacter::Raging()
 
 void ABossCharacter::OnBossDeath()
 {
-	GEngine->AddOnScreenDebugMessage(-245, 5.f, FColor::Red, FString::Printf(TEXT("Boss ded")));
 
 }
 
@@ -169,11 +170,12 @@ void ABossCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 		{
 			if (OtherActor->ActorHasTag(TEXT("Player")))
 			{
-				GEngine->AddOnScreenDebugMessage(-451, 5.f, FColor::Red, FString::Printf(TEXT("hit player")));
 				ATwilightArcheryCharacter* player = Cast<ATwilightArcheryCharacter>(OtherActor);
 				player->Life->LifeDown(damage);
 				FVector normal = GetActorLocation() - player->GetActorLocation();
 				player->OnHit(normal);
+				if (player == target && player->Life->currentLife <= 0)
+					targetIsDead = true;
 			}
 		}
 	}
@@ -256,13 +258,11 @@ void ABossCharacter::Attacking()
 			ABossCharacter::StopRockAttack();
 
 		timeRockAtt += 0.1f;
-		UE_LOG(LogActor, Warning, TEXT("Timer rock: %f"), timeRockAtt);
 	}
 }
 
 void ABossCharacter::ZoneAttack()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ZONE ATTACK")));
 	isAttacking = true;
 	zoneAttack = true;
 	GetWorldTimerManager().SetTimer(AttZone, this, &ABossCharacter::Attacking, 0.1f, true);
@@ -279,12 +279,10 @@ void ABossCharacter::StopZoneAttack()
 	zoneAttack = false;
 	isChasing = false;
 	timeZonAtt = 0.f;
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP ZONE ATTACK")));
 }
 
 void ABossCharacter::HornAttack()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START HORN ATTACK")));
 	isAttacking = true;
 	hornAttack = true;
 	GetWorldTimerManager().SetTimer(AttHorn, this, &ABossCharacter::Attacking, 0.1f, true);
@@ -302,7 +300,6 @@ void ABossCharacter::StopHornAttack()
 	isChasing = false;
 	chooseRdAtt = true;
 	timeHorAtt = 0.f;
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP HORN ATTACK")));
 }
 
 void ABossCharacter::BasicAttack()
@@ -313,9 +310,6 @@ void ABossCharacter::BasicAttack()
 	FVector FacingVector = {target->GetActorLocation().X - GetActorLocation().X, target->GetActorLocation().Y - GetActorLocation().Y, 0};
 	FRotator FacingRotator = FacingVector.Rotation();
 	SetActorRotation(FacingRotator, ETeleportType::None);
-
-	/*GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, FString::Printf(TEXT("HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")));*/
-
 }
 
 void ABossCharacter::StopBasicAttack()
@@ -326,14 +320,10 @@ void ABossCharacter::StopBasicAttack()
 	isChasing = false;
 	chooseRdAtt = true;
 	timeBasAtt = 0.f;
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("STOP BASIC ATTACK")));
-
 }
 
 void ABossCharacter::RockAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-451, 5.f, FColor::Red, FString::Printf(TEXT("begin rock attack")));
-
 	isAttacking = true;
 	rockAttack = true;
 	GetWorldTimerManager().SetTimer(AttRock, this, &ABossCharacter::Attacking, 0.1f, true);

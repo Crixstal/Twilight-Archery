@@ -23,18 +23,13 @@ bool UBTDecorator_CanZoneAttack::CalculateRawConditionValue(UBehaviorTreeCompone
 	if ((distancePlayerEnemy > 450.f && !npc->isAttacking))
 	{
 		npc->isChasing = true;
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Can't zone Attack")));
 		return false;
 	}
 	else
 	{
 		if (npc->isChasing)
-		{
 			return false;
-		}
 		else
-		{
 			return true;
-		}
 	}
 }

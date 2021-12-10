@@ -29,7 +29,6 @@ void ABossAIController::BeginPlay()
 	blackboard->SetValueAsInt(TEXT("NumberOfScript"), 2);
 	blackboard->SetValueAsBool(TEXT("ChooseRandomAtt"), true);
 	blackboard->SetValueAsBool(TEXT("IsAlive"), true);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Compile Succeed")));
 }
 
 void ABossAIController::OnDeath()

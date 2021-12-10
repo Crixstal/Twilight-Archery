@@ -80,9 +80,6 @@ public:
 	float GetRatio();
 	float GetRatio(float min, float max);
 
-	//void Lock();
-	//void Unlock();
-
 protected:
 
 	// Called when the game starts
