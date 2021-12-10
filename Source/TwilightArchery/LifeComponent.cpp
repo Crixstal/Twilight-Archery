@@ -76,6 +76,8 @@ void ULifeComponent::LifeUp(int value)
 		currentLife += value;
 		healthUpdate.Broadcast();
 	}
+
+	currentLife = FMath::Clamp(currentLife, 0, maxLife);
 }
 
 void ULifeComponent::ResetInvincibility()

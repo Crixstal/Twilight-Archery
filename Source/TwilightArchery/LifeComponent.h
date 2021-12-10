@@ -33,6 +33,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LifeDown(int value = 1);
 
+	UFUNCTION(BlueprintCallable)
 	void LifeUp(int value = 1);
 
 	void SetInvincibility(bool value, float coolDown, bool toggle = false);
