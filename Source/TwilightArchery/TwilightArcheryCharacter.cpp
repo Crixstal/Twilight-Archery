@@ -188,14 +188,16 @@ void ATwilightArcheryCharacter::OnToggleSplitscreen()
 
 void ATwilightArcheryCharacter::TurnAtRate(float Rate)
 {
+	float newRate = -1.f + (1.f + 1.f) * ((Rate + 0.5f) / (0.5f + 0.5f));
 	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	AddControllerYawInput(newRate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void ATwilightArcheryCharacter::LookUpAtRate(float Rate)
 {
+	float newRate = -1.f + (1.f + 1.f) * ((Rate + 0.5f) / (0.5f + 0.5f));
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(newRate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void ATwilightArcheryCharacter::MoveForward(float Value)
