@@ -33,7 +33,7 @@ A                   | Move left
 S                   | Move backward
 D                   | Move Right
 Left Shift          | Sprint
-Left Alt            | Dodge
+Left Ctrl           | Dodge
 Space bar           | Jump
 Esc / P             | Pause / Unpause the game
 Move Mouse          | Move the camera around the player
@@ -41,7 +41,7 @@ Mouse Right Click   | Shoot
 
 ## **Gamepad**
 
-![GamepadInputs](GamepadInputs.png)
+![GamepadInputs](GamepadInputs2.png)
 
 <br>
 
