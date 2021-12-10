@@ -68,9 +68,9 @@ ABossCharacter::ABossCharacter()
 	
 	Life = CreateDefaultSubobject<ULifeComponent>(TEXT("LifeComponent"));
 
-	Life->maxLife = 1000;
+	Life->maxLife = 700;
 	Life->currentLife = Life->maxLife;
-	damage = 25;
+	damage = 15;
 }
 
 // Called when the game starts or when spawned
