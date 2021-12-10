@@ -54,13 +54,15 @@ EBTNodeResult::Type UBTTask_GetTarget::ExecuteTask(UBehaviorTreeComponent& Owner
 
 
 	if (npc->Players.Num() > 0)
-{
+	{
 		if (npc->target == nullptr)
 		{
 				npc->target = npc->Players[FMath::RandRange(0, npc->Players.Num() - 1)]->GetPawn();
 		}
 		else
 		{
+			GEngine->AddOnScreenDebugMessage(89345, 5.f, FColor::Magenta, FString::Printf(TEXT("dps by target = %d"), npc->dpsFromTarget));
+			GEngine->AddOnScreenDebugMessage(894345, 5.f, FColor::Magenta, FString::Printf(TEXT("dps by other player = %d"), npc->dpsFromTheOtherPlayer));
 			if (npc->targetIsDead)
 			{
 				onlyOnePlayerAlive = true;

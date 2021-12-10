@@ -109,7 +109,7 @@ void ABossCharacter::BeginPlay()
 		Players.Add(pl);
 	}
 
-	GetCharacterMovement()->MaxWalkSpeed = 400.f;
+	GetCharacterMovement()->MaxWalkSpeed = 430.f;
 
 	Life->InitActor(this);
 	Life->deathEvent.AddDynamic(this, &ABossCharacter::OnBossDeath);
@@ -144,7 +144,7 @@ void ABossCharacter::Raging()
 		isInRage = false;
 		damage = damage/2;
 		cdRaging = 40;
-		GetCharacterMovement()->MaxWalkSpeed = 330.f;
+		GetCharacterMovement()->MaxWalkSpeed = 430.f;
 		GetWorldTimerManager().ClearTimer(TimerHandleKFOT);
 	}
 	else
