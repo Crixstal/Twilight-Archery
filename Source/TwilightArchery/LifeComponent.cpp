@@ -58,9 +58,6 @@ void ULifeComponent::LifeDown(int value)
 		currentLife -= value;
 		healthUpdate.Broadcast();
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, selfActor->GetName() + TEXT(" Life Down"));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT("life = %d"), currentLife));
-
 		if (currentLife <= 0)
 		{
 			deathEvent.Broadcast();

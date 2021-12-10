@@ -20,9 +20,7 @@ EBTNodeResult::Type UBTTask_ZoneAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 		npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
 
 	if (!npc->isAttacking)
-	{
 		npc->ZoneAttack();
-	}
 
 	return EBTNodeResult::Succeeded;
 }

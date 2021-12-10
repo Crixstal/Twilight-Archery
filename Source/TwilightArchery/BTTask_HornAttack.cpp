@@ -18,11 +18,7 @@ EBTNodeResult::Type UBTTask_HornAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 		npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
 
 	if (!npc->isAttacking)
-	{
 		npc->HornAttack();
-	}
-
-	
 
 	return EBTNodeResult::Succeeded;
 }

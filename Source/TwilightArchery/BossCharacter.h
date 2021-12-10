@@ -101,7 +101,11 @@ public:
 	int focusingTimeMax = 8.f;
 	int focustime = 0.f;
 	void KeepFocusOnTarget();
-	
+
+	int dpsFromTarget = 0;
+	int dpsFromTheOtherPlayer = 0;
+	bool targetIsDead = false;
+
 	UWorld* world;
 	TArray<AController*> Players;
 
@@ -121,7 +125,7 @@ public:
 
 	FTimerHandle TimerHandleRage;
 	void Raging();
-	int cdRaging = 20;
+	int cdRaging = 40;
 	int damage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components Choose Rd Attack")

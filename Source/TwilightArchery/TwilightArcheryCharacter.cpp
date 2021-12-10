@@ -92,8 +92,6 @@ void ATwilightArcheryCharacter::Tick(float DeltaTime)
 
 	UpdateCameraBoom();
 
-	//UE_LOG(LogTemp, Warning, TEXT("Walk Speed : %f"), GetCharacterMovement()->MaxWalkSpeed);
-
 	if (bIsDodging)
 	{
 		if (GetCharacterMovement()->IsFalling())
@@ -101,8 +99,6 @@ void ATwilightArcheryCharacter::Tick(float DeltaTime)
 			StopDodge();
 			return;
 		}
-		//FVector newPos = GetActorLocation() + lastControlDirection * dodgeSpeed * GetWorld()->GetDeltaSeconds();
-		//SetActorLocation(newPos);
 		AddMovementInput(lastControlDirection, 1.f);
 	}
 
@@ -173,17 +169,7 @@ void ATwilightArcheryCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 void ATwilightArcheryCharacter::OnToggleSplitscreen()
 {
-	/*auto gameViewport = GetWorld()->GetGameViewport();
 
-	gameViewport->SetForceDisableSplitscreen(!gameViewport->IsSplitscreenForceDisabled());
-
-	gameViewport->MaxSplitscreenPlayers = 2;
-	gameViewport->UpdateActiveSplitscreenType();
-
-	if (gameViewport->IsSplitscreenForceDisabled())
-	{
-		GEngine->AddOnScreenDebugMessage(1, 2, FColor::Red, "Sscreen disabled");
-	}*/
 }
 
 void ATwilightArcheryCharacter::TurnAtRate(float Rate)
@@ -263,8 +249,6 @@ void ATwilightArcheryCharacter::StartDodge()
 
 	dodgeEvent.Broadcast();
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Dodge Speed");
-
 	GetCharacterMovement()->MaxWalkSpeed = dodgeSpeed;
 
 	Stamina->StartDodging();
@@ -286,16 +270,12 @@ void ATwilightArcheryCharacter::StopDodge()
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Dodge Base Speed");
-
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 }
 
 void ATwilightArcheryCharacter::StartSprinting()
 {
 	if (!CanSprint()) return;
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Sprint Start");
 
 	GetCharacterMovement()->MaxWalkSpeed = sprintWalkSpeed;
 
@@ -311,8 +291,6 @@ void ATwilightArcheryCharacter::StopSprinting()
 
 	bIsSprinting = false;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Sprint Base Speed");
-
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 
 	Stamina->StopSprinting();
@@ -321,8 +299,6 @@ void ATwilightArcheryCharacter::StopSprinting()
 void ATwilightArcheryCharacter::StartAiming()
 {
 	if (!CanAim()) return;
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "StartAiming");
 
 	if (BowComponent->bIsAiming || bIsDodging)
 	{
@@ -338,7 +314,6 @@ void ATwilightArcheryCharacter::StartAiming()
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		GetCharacterMovement()->MaxWalkSpeed = aimWalkSpeed;
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Aim walkSpeed");
 
 		bUseControllerRotationRoll = true;
 		bUseControllerRotationYaw = true;
@@ -358,8 +333,6 @@ void ATwilightArcheryCharacter::StopAiming()
 	{
 		BowComponent->bShouldAim = false;
 		OnAimingEnd();
-
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Stop Aiming");
 
 		return;
 	}
@@ -402,13 +375,10 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Aiming End");
-
 	BowComponent->OnEndAiming();
 
 	// Set base character movement control
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "AimEnd Base Speed");
 
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
@@ -427,9 +397,7 @@ void ATwilightArcheryCharacter::OnAimingEnd()
 
 void ATwilightArcheryCharacter::DrawArrow()
 {
-	// On Ready to shoot
-	//ArrowMesh2->SetHiddenInGame(false);
-	//BowComponent->StartCharging();
+
 }
 
 void ATwilightArcheryCharacter::TakeArrowBack()
@@ -534,12 +502,10 @@ bool ATwilightArcheryCharacter::CanAim()
 
 void ATwilightArcheryCharacter::DebugLifeDown()
 {
-	GEngine->AddOnScreenDebugMessage(3805, 1.f, FColor::Green, FString("debugld"));
 	Life->LifeDown(1);
 }
 void ATwilightArcheryCharacter::DebugLifeUp()
 {
-	GEngine->AddOnScreenDebugMessage(38305, 1.f, FColor::Green, FString("debuglu"));
 
 	Life->LifeUp(1);
 }
@@ -564,8 +530,6 @@ void ATwilightArcheryCharacter::OnHit(const FVector& Normal)
 
 	Life->SetInvincibility(true, 0.f, true);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "Hit Speed");
-
 	GetCharacterMovement()->MaxWalkSpeed = hitWalkSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 
@@ -583,9 +547,6 @@ void ATwilightArcheryCharacter::OnHit(const FVector& Normal)
 	}
 
 	float absAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(actorForward, normalHit)));
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "On Hit");
-	//UE_LOG(LogTemp, Warning, TEXT("Angle : %f"), absAngle);
 
 	if (absAngle < 45.f)
 	{
@@ -611,14 +572,10 @@ void ATwilightArcheryCharacter::OnEndHit()
 {
 	bIsHit = false;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "End hit Speed");
-
 	GetCharacterMovement()->MaxWalkSpeed = baseWalkSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	Life->SetInvincibility(false, 0.f);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, "End Hit");
 }
 
 void ATwilightArcheryCharacter::OnStaminaRegen()

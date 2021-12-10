@@ -27,8 +27,6 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//UE_LOG(LogTemp, Warning, TEXT("Aim : %d | Charge : %d | Draw : %d | Time : %f"), bIsAiming, bIsCharging, bHasToDrawArrow, timerCharge);
-
 	if (bIsCharging && !bIsMaxCharged)
 	{
 		if (timerCharge == maxChargeTime)
@@ -42,8 +40,6 @@ void UBowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		timerCharge += GetWorld()->GetDeltaSeconds();
 		timerCharge = FMath::Clamp(timerCharge, 0.f, maxChargeTime);
 	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("Is Aiming : %d"), bIsAiming);
 }
 
 void UBowComponent::OnStartAiming()
@@ -97,8 +93,6 @@ void UBowComponent::Shoot(ATwilightArcheryCharacter* inPlayer, FVector ShootDire
 
 	float mult = map(timerCharge, 0.f, maxChargeTime, minChargeVelocityMultiplier, maxChargeVelocityMultiplier);
 	FVector arrowVelocity = ShootDirection * mult;
-
-	//UE_LOG(LogTemp, Warning, TEXT("Mult = %f"), timerCharge);
 
 	AArrow* arrow = GetWorld()->SpawnActor<AArrow>(arrowBP, ShootTransform);
 	arrow->Initialize(inPlayer, arrowVelocity, GetRatio(0.5f, 1.f));

@@ -61,21 +61,24 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 {
 	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	GEngine->AddOnScreenDebugMessage(-864, 5.f, FColor::Emerald, "ArrowHit");
-
 	bool hasHitEnemy = false;
 	int damages = 0;
 
 	if (OtherActor->ActorHasTag(TEXT("Enemy")))
 	{
-		GEngine->AddOnScreenDebugMessage(78663, 5.f, FColor::Emerald, OtherActor->GetName());
 		
 		ABossCharacter* enemy = Cast<ABossCharacter>(OtherActor);
 
 		float multiplier = GetMultiplier(OtherComp->ComponentTags.Last(), enemy->multipliers);
+		
 
 		damages = damage * multiplier;
 		hasHitEnemy = true;
+
+		if (player == enemy->target)
+			enemy->dpsFromTarget += damages;
+		else
+			enemy->dpsFromTheOtherPlayer += damages;
 		enemy->Life->LifeDown(damages);
 
 
@@ -83,7 +86,4 @@ void AArrow::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 	}
 
 	hitDelegate.Broadcast(hasHitEnemy, damages);
-
-	//CapsuleComponent->DestroyComponent();
-	//ProjectileComponent->DestroyComponent();
 }

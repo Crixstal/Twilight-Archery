@@ -42,9 +42,6 @@ EBTNodeResult::Type UBTTask_RandomiseBehavior::ExecuteTask(UBehaviorTreeComponen
 	{
 		prepreviousValue = previousValue;
 		previousValue = value;
-
-		
-
 		int incr = FMath::RandRange(1, numberOfScript * 3);
 		value = values[incr - 1];
 

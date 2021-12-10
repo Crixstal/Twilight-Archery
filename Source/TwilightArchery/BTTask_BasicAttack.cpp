@@ -17,10 +17,7 @@ EBTNodeResult::Type UBTTask_BasicAttack::ExecuteTask(UBehaviorTreeComponent& Own
 		npc = Cast<ABossCharacter>(actualEnemy->GetPawn());
 
 	if (!npc->isAttacking)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("START ATTACK")));
 		npc->BasicAttack();
-	}
 
 	return EBTNodeResult::Succeeded;
 }
