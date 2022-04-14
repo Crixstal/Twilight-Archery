@@ -1,10 +1,10 @@
 # **Twilight Archery**
 
 ## **Summary**
-- [Description](##Description)
-- [Targets](##Targets)
-- [Commands](##Commands)
-- [References](##References)
+- [Description](#Description)
+- [Targets](#Targets)
+- [Commands](#Commands)
+- [References](#References)
 
 <br>
 
@@ -47,6 +47,8 @@ Mouse Right Click   | Shoot
 
 ## **References**
 
-Unreal Engine
----
-- https://docs.unrealengine.com/4.26/en-US/
+Unreal Engine: https://docs.unrealengine.com/4.26/en-US/
+
+<br>
+
+[Top of page](#Summary)
