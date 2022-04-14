@@ -41,7 +41,7 @@ Mouse Right Click   | Shoot
 
 ## **Gamepad**
 
-![GamepadInputs](GamepadInputs2.png)
+![GamepadInputs](Annexes/GamepadInputs2.png)
 
 <br>
 
